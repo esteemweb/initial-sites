@@ -1,0 +1,40 @@
+/* The four states. Each is a CSS filter list; url() steps point at the
+   SVG defs rendered in the layout. CSS filter functions run in order, so
+   the crush (contrast 2.2, brightness 0.8) happens before the cut. */
+
+.plain {
+  filter: grayscale(1) contrast(1.15) brightness(0.85);
+}
+
+.poster {
+  filter: grayscale(1) url(#dt-poster);
+}
+
+.threshold {
+  filter: grayscale(1) contrast(2.2) brightness(0.8) url(#dt-threshold);
+}
+
+.inverted {
+  filter: grayscale(1) contrast(2.2) brightness(0.8) url(#dt-inverted);
+}
+
+/* Grain: an SVG noise tile at 12% opacity over the posterised state. */
+.grain {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.12;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='256' height='256'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/></filter><rect width='256' height='256' filter='url(%23n)'/></svg>");
+  background-size: 256px 256px;
+}
+
+.frame {
+  position: relative;
+  overflow: hidden;
+  background: var(--black);
+}
+.frame img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}

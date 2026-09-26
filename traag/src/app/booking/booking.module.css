@@ -1,0 +1,153 @@
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s6);
+  max-width: 880px;
+}
+
+.group {
+  border: 0;
+  display: grid;
+  gap: var(--s4) var(--gutter);
+}
+@media (min-width: 768px) {
+  .group {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+  .wide {
+    grid-column: 1 / -1;
+  }
+}
+.group legend {
+  padding-bottom: var(--s2);
+  margin-bottom: var(--s1);
+  width: 100%;
+  border-bottom: 1px solid var(--ghost);
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s1);
+  min-width: 0;
+}
+.hint {
+  color: var(--ghost);
+}
+.control {
+  width: 100%;
+  min-height: 48px;
+  padding: 0 var(--s2);
+  background: var(--black);
+  color: var(--paper);
+  border: 1px solid var(--ghost);
+  font-family: var(--font-record), ui-monospace, monospace;
+  font-size: 16px; /* 16 so iOS does not zoom on focus */
+  appearance: none;
+}
+textarea.control {
+  padding: var(--s2);
+  resize: vertical;
+  line-height: 1.5;
+}
+select.control {
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'><path d='M0 0h12L6 8z' fill='%23F0EDE6'/></svg>");
+  background-position: calc(100% - 16px) 50%;
+  background-size: 12px 8px;
+  background-repeat: no-repeat;
+  padding-right: var(--s5);
+}
+.control:hover {
+  border-color: var(--paper);
+}
+.control:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 0;
+  border-color: var(--ink);
+}
+.control[aria-invalid="true"] {
+  border-color: var(--ink);
+}
+
+/* errors: ink on black is 5.84:1, and every message is words, not colour */
+.error {
+  color: var(--ink);
+}
+
+.summary {
+  padding: var(--s3);
+  border: 1px solid var(--ink);
+  display: flex;
+  flex-direction: column;
+  gap: var(--s2);
+}
+.summary:focus-visible {
+  outline-offset: 3px;
+}
+.summary ul {
+  list-style: none;
+}
+.summary a {
+  display: inline-flex;
+  min-height: 48px;
+  align-items: center;
+  color: var(--ink);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.submitRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s2) var(--s3);
+}
+.button {
+  min-height: 48px;
+  padding: 0 var(--s5);
+  background: var(--paper);
+  color: var(--black);
+  border: 1px solid var(--paper);
+  cursor: pointer;
+  transition: opacity var(--d-hover) var(--ease);
+}
+.button:hover {
+  opacity: 0.7;
+}
+.secondary {
+  background: var(--black);
+  color: var(--paper);
+  align-self: flex-start;
+}
+
+.done {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s3);
+  max-width: var(--measure);
+}
+.done h2:focus {
+  outline: none;
+}
+.ref {
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  color: var(--ink);
+}
+.recap {
+  border-top: 1px solid var(--ghost);
+}
+.recap > div {
+  display: grid;
+  grid-template-columns: 18ch minmax(0, 1fr);
+  gap: var(--s2);
+  padding-block: var(--s1);
+  border-bottom: 1px solid var(--ghost);
+}
+.recap dt {
+  color: var(--ghost);
+}
+.recap dd {
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}

@@ -1,0 +1,33 @@
+.body {
+  display: grid;
+  gap: var(--s6);
+  padding-block: var(--s7) var(--s6);
+}
+@media (min-width: 1024px) {
+  .body {
+    grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+    column-gap: var(--s7);
+    align-items: start;
+  }
+}
+.photo {
+  position: relative;
+  aspect-ratio: 3 / 4;
+}
+@media (min-width: 1024px) {
+  .photo {
+    position: sticky;
+    top: calc(var(--header) + var(--s3));
+  }
+}
+.img {
+  object-fit: cover;
+  filter: grayscale(1) contrast(1.15) brightness(0.85);
+}
+.text {
+  font-weight: 400;
+  align-self: center;
+}
+.text p + p {
+  margin-top: var(--s3);
+}

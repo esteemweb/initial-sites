@@ -1,0 +1,150 @@
+/* A list, not cards. Every row is monospace on a rule. At 390 a row
+   breaks onto three short lines but stays a row: same rule, same order,
+   same left edge. From 768 it is one line with columns. */
+
+.wrap {
+  color: var(--paper);
+}
+
+.head {
+  display: none;
+}
+
+.list {
+  list-style: none;
+}
+
+.row {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas:
+    "date   status"
+    "city   city"
+    "venue  doors"
+    "note   note";
+  column-gap: var(--s2);
+  padding-block: var(--s2);
+}
+/* the rule under each row is its own element so it can be drawn */
+.row::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  background: var(--ghost);
+  transform-origin: left center;
+}
+/* drawn left to right on entry: 300ms each, 40ms apart, the stagger
+   capped at the eighth row so no list takes longer than 600ms */
+:global(html[data-motion]) .list[data-reveal] .row::after {
+  transform: scaleX(0);
+  transition: transform var(--d-rule) var(--ease);
+  transition-delay: calc(var(--i, 0) * 40ms);
+}
+:global(html[data-motion]) .list[data-reveal][data-in] .row::after {
+  transform: none;
+}
+
+.date {
+  grid-area: date;
+  display: flex;
+  gap: var(--s1);
+}
+.day {
+  color: var(--ghost);
+}
+.city {
+  grid-area: city;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-weight: 500;
+}
+.venue {
+  grid-area: venue;
+}
+.doors {
+  grid-area: doors;
+  text-align: right;
+}
+.status {
+  grid-area: status;
+  text-align: right;
+}
+.note {
+  grid-area: note;
+  color: var(--ghost);
+  margin-top: var(--s1);
+}
+.label {
+  color: var(--ghost);
+}
+
+.sold {
+  font-weight: 500;
+  letter-spacing: 0.04em;
+}
+
+/* ink is reserved for the live marker; the ticket link is paper,
+   underlined, and a full 48px target */
+.tix {
+  display: inline-flex;
+  align-items: center;
+  min-height: 48px;
+  margin-block: -14px;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.past {
+  color: var(--ghost);
+}
+.past .day,
+.past .label,
+.past .note {
+  color: var(--ghost);
+}
+
+.pastHead {
+  margin-top: var(--s6);
+  padding-bottom: var(--s2);
+  border-bottom: 1px solid var(--ghost);
+}
+
+.empty {
+  padding-block: var(--s3);
+  border-bottom: 1px solid var(--ghost);
+}
+
+@media (min-width: 768px) {
+  .head,
+  .row {
+    grid-template-columns: 16ch minmax(0, 1fr) minmax(0, 1.3fr) 11ch 12ch;
+    grid-template-areas: "date city venue doors status";
+    column-gap: var(--s3);
+    align-items: baseline;
+  }
+  .head {
+    display: grid;
+    padding-bottom: var(--s1);
+    border-bottom: 1px solid var(--ghost);
+    color: var(--ghost);
+  }
+  .head span:nth-child(4),
+  .head span:nth-child(5) {
+    text-align: right;
+  }
+  .row {
+    grid-template-areas:
+      "date city venue doors status"
+      ".    note note  .     .";
+  }
+  .note:empty {
+    display: none;
+  }
+  .doors .label {
+    display: none;
+  }
+}

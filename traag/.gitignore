@@ -1,0 +1,13 @@
+node_modules
+.next
+next-env.d.ts
+
+# secrets: .env.local holds LIST_SECRET locally; never push any .env file
+.env*
+!.env.example
+
+# working folders kept on disk but out of the repo: the full-resolution
+# original photographs, and the Higgsfield outputs and logs (which contain
+# account-specific download links). The site builds without either.
+allaboutartist/
+generated/

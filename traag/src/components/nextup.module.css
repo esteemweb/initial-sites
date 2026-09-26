@@ -1,0 +1,63 @@
+.rows {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--s1);
+}
+.row {
+  display: grid;
+  grid-template-columns: 48px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--s2);
+  min-height: 72px;
+  padding: var(--s1) var(--s2);
+  border-radius: var(--radius);
+  border: 1px solid var(--line);
+  background: var(--card);
+}
+.row:nth-child(even) {
+  background: transparent;
+}
+/* the date sits in a round badge, where the template has a thumbnail */
+.date {
+  width: 48px;
+  height: 48px;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  background: var(--ink);
+  color: var(--black);
+  font-family: var(--font-record), ui-monospace, monospace;
+  font-size: 13px;
+  font-weight: 500;
+}
+.text {
+  font-size: 16px;
+  line-height: 1.35;
+}
+.city {
+  text-transform: uppercase;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+.meta {
+  color: var(--ghost);
+  font-size: 14px;
+}
+.status {
+  white-space: nowrap;
+}
+.tix {
+  display: inline-flex;
+  align-items: center;
+  min-height: 48px;
+  padding: 0 var(--s2);
+  border-radius: 999px;
+  border: 1px solid var(--line-ink);
+  color: var(--ink);
+}
+@media (max-width: 479px) {
+  .meta {
+    display: block;
+  }
+}

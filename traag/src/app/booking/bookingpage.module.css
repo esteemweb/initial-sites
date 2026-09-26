@@ -1,0 +1,50 @@
+.wrap {
+  padding-block: var(--s6);
+}
+.stance {
+  font-weight: 400;
+  margin-bottom: var(--s5);
+}
+.contacts {
+  list-style: none;
+  display: grid;
+  gap: var(--s2);
+  margin-bottom: var(--s6);
+}
+@media (min-width: 768px) {
+  .contacts {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+.contact {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s1);
+  padding: var(--s3);
+}
+.email {
+  display: inline-flex;
+  align-items: center;
+  min-height: 48px;
+  font-family: var(--font-head), "Unbounded", "Arial Black", sans-serif;
+  font-weight: 700;
+  font-size: clamp(14px, 1.6vw, 18px);
+  overflow-wrap: anywhere;
+}
+.formCard {
+  padding: var(--s4) var(--s3);
+}
+@media (min-width: 768px) {
+  .formCard {
+    padding: var(--s6);
+  }
+}
+.formTitle {
+  font-family: var(--font-head), "Unbounded", "Arial Black", sans-serif;
+  font-weight: 900;
+  text-transform: uppercase;
+  color: var(--ink);
+  font-size: clamp(22px, 3vw, 40px);
+  line-height: 0.9;
+  margin-bottom: var(--s5);
+}

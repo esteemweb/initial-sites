@@ -1,0 +1,45 @@
+.footer {
+  padding-block: var(--s8) var(--s4);
+  overflow: hidden;
+}
+.title {
+  font-family: var(--font-head), "Unbounded", "Arial Black", sans-serif;
+  font-weight: 900;
+  text-transform: uppercase;
+  color: var(--ink);
+  font-size: clamp(26px, 3.6vw, 50px);
+  line-height: 0.9;
+}
+.lede {
+  margin-block: var(--s2) var(--s4);
+}
+.bottom {
+  margin-top: var(--s6);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--s3);
+}
+.nav {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 var(--s1);
+}
+.nav a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 48px;
+  padding-inline: var(--s1);
+  color: var(--ink);
+}
+.small {
+  margin-top: var(--s4);
+  padding-top: var(--s3);
+  border-top: 1px solid var(--line);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: var(--s1) var(--s3);
+}

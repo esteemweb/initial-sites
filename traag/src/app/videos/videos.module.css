@@ -1,0 +1,47 @@
+.item {
+  padding-top: var(--s7);
+}
+.title {
+  font-family: var(--font-head), "Unbounded", "Arial Black", sans-serif;
+  font-weight: 800;
+  text-transform: uppercase;
+  font-size: clamp(20px, 2.4vw, 32px);
+  line-height: 1;
+  margin-bottom: var(--s3);
+}
+
+.more {
+  position: relative;
+  margin-block: var(--s7) var(--s6);
+  min-height: 320px;
+  isolation: isolate;
+}
+.moreImg {
+  object-fit: cover;
+  z-index: -2;
+  filter: grayscale(1) contrast(1.2) brightness(0.45);
+}
+.more::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: rgba(255, 74, 0, 0.5);
+  mix-blend-mode: multiply;
+}
+.moreBody {
+  padding: var(--s5) var(--s4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--s3);
+  max-width: 720px;
+}
+.moreTitle {
+  font-family: var(--font-head), "Unbounded", "Arial Black", sans-serif;
+  font-weight: 800;
+  text-transform: uppercase;
+  font-size: clamp(18px, 2vw, 24px);
+  line-height: 1;
+  padding-bottom: var(--s3);
+  border-bottom: 1px solid var(--line);
+}

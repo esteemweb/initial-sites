@@ -1,0 +1,9 @@
+# Guest list: git ignores every folder here unless it's listed below.
+/*
+!/.gitignore
+
+# Sites approved for the public repo (add one line per audited site)
+!/traag/
+
+# Never publish security audit reports
+**/SECURITY-AUDIT.md

@@ -1,0 +1,28 @@
+.list {
+  list-style: none;
+  display: flex;
+  gap: var(--s1);
+}
+/* circular chips with a faint ink ring */
+.icon {
+  width: 48px;
+  height: 48px;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  border: 1px solid var(--line-ink);
+  color: var(--ink);
+  transition:
+    background var(--d-hover) var(--ease),
+    color var(--d-hover) var(--ease),
+    opacity var(--d-hover) var(--ease);
+}
+.icon svg {
+  width: 20px;
+  height: 20px;
+}
+.icon:hover {
+  opacity: 1;
+  background: var(--ink);
+  color: var(--black);
+}

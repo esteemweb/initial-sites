@@ -1,0 +1,206 @@
+.page {
+  padding-block: var(--s6) var(--s9);
+}
+
+.section {
+  padding-block: var(--s6);
+  border-top: 1px solid var(--ghost);
+}
+.section:first-of-type {
+  border-top: 0;
+}
+
+.head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--s1) var(--s2);
+  margin-bottom: var(--s5);
+}
+.head > p {
+  flex-basis: 100%;
+}
+@media (min-width: 768px) {
+  .head > p {
+    flex-basis: auto;
+  }
+}
+
+.note {
+  max-width: var(--measure);
+  margin-top: var(--s2);
+}
+
+/* colour */
+.swatches {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--gutter);
+}
+@media (min-width: 768px) {
+  .swatches {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+.swatch {
+  aspect-ratio: 1 / 1;
+  padding: var(--s2);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  border: 1px solid var(--ghost);
+}
+
+.pairs {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--gutter);
+  margin-top: var(--s5);
+}
+@media (min-width: 768px) {
+  .pairs {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+@media (min-width: 1024px) {
+  .pairs {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+.pair {
+  min-height: 160px;
+  padding: var(--s2);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: var(--s2);
+  border: 1px solid var(--ghost);
+}
+.pairSample {
+  font-size: var(--t-md);
+  line-height: 1;
+}
+.pairMeta {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--s1);
+}
+
+/* type */
+.typeHead {
+  display: none;
+  margin-top: var(--s5);
+}
+@media (min-width: 1024px) {
+  .typeHead {
+    display: grid;
+    grid-template-columns: 200px minmax(0, 1fr) minmax(0, 1fr);
+    gap: var(--gutter);
+  }
+}
+.typeHead + .typeRow {
+  margin-top: var(--s4);
+}
+.typeRow {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--s3);
+  padding-block: var(--s4);
+  border-top: 1px solid var(--ghost);
+}
+@media (min-width: 1024px) {
+  .typeRow {
+    grid-template-columns: 200px minmax(0, 1fr) minmax(0, 1fr);
+    gap: var(--gutter);
+  }
+}
+/* the wordmark is set too large for a column on purpose; give it the row */
+@media (min-width: 1024px) {
+  .typeRowWide {
+    grid-template-columns: 200px minmax(0, 1fr);
+  }
+  .sampleWide {
+    grid-column: 1 / -1;
+    padding-top: var(--s3);
+  }
+}
+.sampleWide {
+  white-space: nowrap;
+  overflow: clip;
+}
+@media (min-width: 1024px) {
+  .sampleWide {
+    overflow: visible;
+  }
+}
+.typeMeta {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s1);
+}
+.sample {
+  overflow-wrap: anywhere;
+}
+.sample p + p {
+  margin-top: var(--s2);
+}
+
+/* spacing */
+.ramp {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s2);
+}
+.rampRow {
+  display: grid;
+  grid-template-columns: 80px 1fr;
+  align-items: center;
+  gap: var(--s2);
+}
+.rampBar {
+  height: 16px;
+  background: var(--ink);
+}
+
+/* grid */
+.gridDemo {
+  height: 96px;
+}
+.gridDemo > div {
+  height: 100%;
+  background: var(--ghost);
+  opacity: 0.35;
+}
+
+/* duotone */
+.states {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--gutter);
+}
+@media (min-width: 1024px) {
+  .states {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+.state {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s2);
+}
+.stateFrame {
+  aspect-ratio: 4 / 5;
+}
+
+/* rules list */
+.rules {
+  list-style: none;
+  display: grid;
+  gap: var(--s1);
+  max-width: var(--measure);
+}
+.rules li {
+  padding-block: var(--s1);
+  border-top: 1px solid var(--ghost);
+}

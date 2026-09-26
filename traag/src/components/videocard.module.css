@@ -1,0 +1,51 @@
+.card {
+  position: relative;
+  width: 100%;
+  background: var(--black);
+}
+.media {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  background: var(--black);
+}
+.poster {
+  position: absolute;
+  inset: 0;
+  border: 0;
+  padding: 0;
+  background: none;
+  cursor: pointer;
+}
+.poster img {
+  filter: grayscale(1) contrast(1.1) brightness(0.8);
+  transition: filter 240ms var(--ease);
+}
+.poster:hover img {
+  filter: grayscale(0.4) contrast(1.1) brightness(0.9);
+}
+.play {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 64px;
+  height: 64px;
+  margin: -32px 0 0 -32px;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  border: 1px solid rgba(240, 237, 230, 0.6);
+  background: rgba(11, 11, 11, 0.45);
+  color: var(--paper);
+  backdrop-filter: blur(6px);
+}
+.play svg {
+  width: 28px;
+  height: 28px;
+}
+.poster:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: -4px;
+}

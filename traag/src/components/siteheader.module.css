@@ -1,0 +1,137 @@
+.header {
+  position: fixed;
+  z-index: 30;
+  inset: 0 0 auto 0;
+  height: var(--header);
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  padding-inline: var(--gutter);
+  border-bottom: 1px solid transparent;
+  background: linear-gradient(to bottom, rgba(11, 11, 11, 0.7), transparent);
+  transition:
+    background 240ms var(--ease),
+    border-color 240ms var(--ease);
+}
+.solid {
+  background: rgba(11, 11, 11, 0.86);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom-color: var(--line);
+}
+
+.links {
+  display: none;
+}
+.links ul {
+  list-style: none;
+  display: flex;
+  gap: var(--s4);
+}
+.links a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 48px;
+  color: rgba(240, 237, 230, 0.72);
+}
+/* the current page: full paper text with an ink underline, so it reads
+   over the tinted photo headers and is not marked by colour alone */
+.links a[aria-current="page"] {
+  color: var(--paper);
+  text-decoration: underline;
+  text-decoration-color: var(--ink);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 6px;
+}
+
+.mark {
+  grid-column: 2;
+  font-family: var(--font-head), "Unbounded", "Arial Black", sans-serif;
+  font-weight: 900;
+  font-size: 20px;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--ink);
+  display: inline-flex;
+  align-items: center;
+  min-height: 48px;
+}
+
+.socials {
+  display: none;
+}
+
+.menu {
+  grid-column: 3;
+  justify-self: end;
+  min-height: 48px;
+  padding: 0 var(--s3);
+  border-radius: 999px;
+  border: 1px solid var(--line-ink);
+  background: rgba(11, 11, 11, 0.6);
+  color: var(--paper);
+  cursor: pointer;
+}
+
+@media (min-width: 1024px) {
+  .links {
+    display: block;
+  }
+  .socials {
+    display: flex;
+    justify-self: end;
+  }
+  .menu {
+    display: none;
+  }
+}
+
+/* mobile sheet */
+.sheet {
+  width: 100%;
+  max-width: none;
+  height: 100dvh;
+  max-height: none;
+  margin: 0;
+  padding: var(--s2) var(--gutter) var(--s6);
+  border: 0;
+  background: var(--black);
+  color: var(--paper);
+}
+.sheet::backdrop {
+  background: var(--black);
+}
+.sheetTop {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.close {
+  display: inline-flex;
+  align-items: center;
+}
+.sheetList {
+  list-style: none;
+  margin-block: var(--s6);
+  display: flex;
+  flex-direction: column;
+  gap: var(--s1);
+}
+.sheetList a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 56px;
+  font-family: var(--font-head), "Unbounded", "Arial Black", sans-serif;
+  font-weight: 900;
+  font-size: 30px;
+  line-height: 1.1;
+  text-transform: uppercase;
+  color: var(--paper);
+}
+.sheetList a[aria-current="page"] {
+  color: var(--ink);
+}
+
+.locked {
+  overflow: hidden;
+}

@@ -1,0 +1,274 @@
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s3);
+  max-width: 720px;
+}
+.fields {
+  display: grid;
+  gap: var(--s3) var(--gutter);
+}
+@media (min-width: 768px) {
+  .fields {
+    grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
+  }
+}
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s1);
+  min-width: 0;
+}
+.control {
+  width: 100%;
+  min-height: 48px;
+  border-radius: var(--radius-sm);
+  padding: 0 var(--s2);
+  background: var(--black);
+  color: var(--paper);
+  border: 1px solid var(--ghost);
+  font-family: var(--font-record), ui-monospace, monospace;
+  font-size: 16px;
+}
+.control:hover {
+  border-color: var(--paper);
+}
+.control:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 0;
+  border-color: var(--ink);
+}
+.control[aria-invalid="true"] {
+  border-color: var(--ink);
+}
+.error {
+  color: var(--ink);
+}
+.error:focus {
+  outline: none;
+}
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s2) var(--s3);
+}
+.button {
+  min-height: 48px;
+  padding: 0 var(--s4);
+  border-radius: var(--radius-sm);
+  background: var(--ink);
+  color: var(--black);
+  border: 1px solid var(--ink);
+  cursor: pointer;
+  transition: opacity var(--d-hover) var(--ease);
+}
+.button:hover {
+  opacity: 0.7;
+}
+.button:disabled {
+  opacity: 0.7;
+  cursor: progress;
+}
+.secondary {
+  background: var(--black);
+  color: var(--paper);
+}
+.compact .fields {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+/* ------------------------------------------------ pages */
+.intro {
+  margin-block: var(--s3) var(--s6);
+}
+.notice {
+  padding: var(--s3);
+  border: 1px solid var(--ghost);
+  margin-bottom: var(--s5);
+  max-width: 720px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--s2);
+}
+.notice a {
+  display: inline-flex;
+  min-height: 48px;
+  align-items: center;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+.alt {
+  margin-top: var(--s6);
+  padding-top: var(--s3);
+  border-top: 1px solid var(--ghost);
+  max-width: 720px;
+}
+.alt a {
+  display: inline-flex;
+  min-height: 48px;
+  align-items: center;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+/* the simulated email: paper, because it is reading */
+.mail {
+  max-width: 720px;
+  padding: var(--s4) var(--s3);
+  display: flex;
+  flex-direction: column;
+  gap: var(--s3);
+}
+@media (min-width: 768px) {
+  .mail {
+    padding: var(--s5);
+  }
+}
+.mailHead {
+  display: grid;
+  grid-template-columns: 9ch minmax(0, 1fr);
+  gap: var(--s1) var(--s2);
+  padding-bottom: var(--s3);
+  border-bottom: 1px solid var(--black);
+}
+.mailHead dd {
+  overflow-wrap: anywhere;
+}
+.mailButton {
+  align-self: flex-start;
+  min-height: 48px;
+  display: inline-flex;
+  align-items: center;
+  padding: 0 var(--s4);
+  background: var(--black);
+  color: var(--paper);
+}
+.demoNote {
+  margin-top: var(--s3);
+  max-width: 720px;
+}
+
+/* inside */
+.rows {
+  list-style: none;
+  border-top: 1px solid var(--ghost);
+}
+.row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas:
+    "date   public"
+    "city   city"
+    "venue  doors"
+    "note   note";
+  column-gap: var(--s2);
+  padding-block: var(--s2);
+  border-bottom: 1px solid var(--ghost);
+}
+.rDate {
+  grid-area: date;
+}
+.rCity {
+  grid-area: city;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-weight: 500;
+}
+.rVenue {
+  grid-area: venue;
+}
+.rDoors {
+  grid-area: doors;
+  text-align: right;
+}
+.rPublic {
+  grid-area: public;
+  text-align: right;
+  color: var(--ghost);
+}
+.rNote {
+  grid-area: note;
+  color: var(--ghost);
+  margin-top: var(--s1);
+}
+@media (min-width: 768px) {
+  .row {
+    grid-template-columns: 12ch minmax(0, 1fr) minmax(0, 1.2fr) 11ch 20ch;
+    grid-template-areas:
+      "date city venue doors public"
+      ".    note note  .     .";
+    column-gap: var(--s3);
+    align-items: baseline;
+  }
+}
+
+.presale {
+  padding: var(--s4) var(--s3);
+  display: grid;
+  gap: var(--s2);
+  max-width: 720px;
+}
+@media (min-width: 768px) {
+  .presale {
+    padding: var(--s5);
+  }
+}
+.code {
+  font-family: var(--font-record), ui-monospace, monospace;
+  font-weight: 500;
+  font-size: var(--t-md);
+  letter-spacing: 0.08em;
+}
+
+.leave {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s2);
+  max-width: 720px;
+}
+.leaveButtons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s2);
+}
+.textButton {
+  min-height: 48px;
+  padding: 0;
+  background: none;
+  border: 0;
+  color: var(--paper);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  cursor: pointer;
+  transition: opacity var(--d-hover) var(--ease);
+}
+.textButton:hover {
+  opacity: 0.7;
+}
+
+/* footer: fields and button on one row from 768 */
+.inline {
+  max-width: none;
+}
+@media (min-width: 768px) {
+  .inline {
+    display: grid;
+    grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+    align-items: end;
+    gap: var(--s2) var(--gutter);
+  }
+  .inline .fields {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+  .inline .actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .inline .actions p {
+    display: none;
+  }
+}
+.inline .actions .button {
+  width: 100%;
+}

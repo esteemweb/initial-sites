@@ -1,0 +1,31 @@
+.figure {
+  margin: 0;
+}
+.frame {
+  position: relative;
+  overflow: hidden;
+  background: var(--black);
+}
+.img {
+  object-fit: cover;
+}
+.caption {
+  margin-top: var(--s1);
+  color: var(--ghost);
+}
+:global(.paper) .caption {
+  color: var(--black);
+}
+
+/* fade up, once, 500ms. Only when motion is on; otherwise final state. */
+:global(html[data-motion]) .figure {
+  opacity: 0;
+  transform: translateY(16px);
+  transition:
+    opacity var(--d-photo) var(--ease),
+    transform var(--d-photo) var(--ease);
+}
+:global(html[data-motion]) .figure[data-in] {
+  opacity: 1;
+  transform: none;
+}

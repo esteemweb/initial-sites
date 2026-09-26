@@ -1,0 +1,28 @@
+/* The live marker. Top right, on every page, on a black chip so it reads
+   over any photograph and over the inverted hero state. The square is
+   the "live" light: radius 0 everywhere, so it is a square. */
+.live {
+  min-height: 48px;
+  border-radius: 999px;
+  border: 1px solid var(--line-ink);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s1);
+  padding: 0 var(--s2);
+  background: var(--black);
+  color: var(--ink);
+  white-space: nowrap;
+  max-width: calc(100vw - 2 * var(--gutter));
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.dot {
+  width: 8px;
+  height: 8px;
+  background: currentColor;
+  flex: none;
+}
+.text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

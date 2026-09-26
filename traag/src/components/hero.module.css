@@ -1,0 +1,310 @@
+/* Full-bleed hero: the room behind, tinted in ink; the showreel as a 4:5
+   portrait in the centre; the wordmark set huge across the bottom; the
+   next show top right. */
+
+.hero {
+  position: relative;
+  height: 100dvh;
+  min-height: 640px;
+  overflow: hidden;
+  background: var(--black);
+  isolation: isolate;
+}
+
+.bg {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+}
+.bgVideo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* grayscale, darkening and blur are baked into the file */
+  transform: scale(1.04);
+}
+.bg::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 74, 0, 0.5);
+  mix-blend-mode: multiply;
+}
+
+.stage {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  height: 100%;
+  aspect-ratio: 4 / 5;
+  max-width: 100%;
+  overflow: hidden;
+  z-index: -1;
+  /* feather the sides so the portrait melts into the room behind it */
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 14%, #000 86%, transparent);
+  mask-image: linear-gradient(to right, transparent, #000 14%, #000 86%, transparent);
+}
+@media (max-width: 599px) {
+  .stage {
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+}
+@media (min-width: 1024px) {
+  .stage {
+    top: var(--header);
+    height: calc(100% - var(--header));
+  }
+}
+
+/* darkens the bottom so the wordmark always reads, and the top for the header */
+.scrim {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background:
+    linear-gradient(to top, var(--black) 0%, rgba(11, 11, 11, 0.7) 22%, rgba(11, 11, 11, 0) 50%),
+    linear-gradient(to bottom, rgba(11, 11, 11, 0.6), rgba(11, 11, 11, 0) 18%);
+  pointer-events: none;
+}
+
+.live {
+  position: absolute;
+  top: calc(var(--header) + var(--s2));
+  right: var(--gutter);
+}
+
+.foot {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: var(--s4);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--s1);
+  padding-inline: var(--gutter);
+  text-align: center;
+}
+
+/* ------------------------------------------------------------------
+   The cycle. One portrait is four stacked layers of the same image
+   (one network request), each with its own filter. A single 5600ms
+   timeline fades each layer in over 400ms, holds it 900ms, and fades it
+   out under the next. Opacity only, so every frame is compositor work
+   and the main thread is idle between portrait swaps.
+
+   1300ms per state → 23.21% of 5600. 400ms fade → 7.14%.
+   ------------------------------------------------------------------ */
+
+.portrait {
+  position: absolute;
+  inset: 0;
+}
+.dynamic {
+  position: absolute;
+  inset: 0;
+}
+.layer {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  animation-duration: 5600ms;
+  animation-timing-function: var(--ease);
+  animation-fill-mode: both;
+}
+.layer img {
+  object-fit: cover;
+}
+
+.l1 {
+  animation-name: s1;
+}
+.l2 {
+  animation-name: s2;
+}
+.l3 {
+  animation-name: s3;
+}
+.l4 {
+  animation-name: s4;
+}
+
+/* A scheduled portrait waits one full period, transparent, before its
+   first fade. The component then pins the exact start time. */
+.scheduled .layer {
+  animation-delay: 5200ms;
+}
+
+/* The first portrait on load is already in state 1 at first paint, so
+   the largest image on the page is visible immediately. */
+.first .l1 {
+  animation-name: s1first;
+}
+@keyframes s1first {
+  0%,
+  30.36% {
+    opacity: 1;
+  }
+  30.37%,
+  100% {
+    opacity: 0;
+  }
+}
+
+/* Each layer fades in on top of the one before it, which stays fully
+   opaque underneath until the fade completes and then drops out in one
+   step. Layers stack in DOM order, so this is a true crossfade: the
+   black ground never shows through mid-fade. */
+@keyframes s1 {
+  0% { opacity: 0; }
+  7.14% { opacity: 1; }
+  30.36% { opacity: 1; }
+  30.37% { opacity: 0; }
+  100% { opacity: 0; }
+}
+@keyframes s2 {
+  0%, 23.21% { opacity: 0; }
+  30.36% { opacity: 1; }
+  53.57% { opacity: 1; }
+  53.58% { opacity: 0; }
+  100% { opacity: 0; }
+}
+@keyframes s3 {
+  0%, 46.43% { opacity: 0; }
+  53.57% { opacity: 1; }
+  76.79% { opacity: 1; }
+  76.8% { opacity: 0; }
+  100% { opacity: 0; }
+}
+/* The last state holds to the end; the next portrait mounts on top of
+   it and fades in, and this one is unmounted once that fade is done. */
+@keyframes s4 {
+  0%, 69.64% { opacity: 0; }
+  76.79% { opacity: 1; }
+  100% { opacity: 1; }
+}
+
+/* one pixel of overscan on every side, so the stills underneath never
+   show at a sub-pixel edge */
+.video {
+  position: absolute;
+  inset: -1px;
+  width: calc(100% + 2px);
+  height: calc(100% + 2px);
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 400ms var(--ease);
+}
+.videoReady {
+  opacity: 1;
+}
+
+/* Reduced motion: one image, state 3, static. No timeline runs, and the
+   server-rendered first frame is already the right one. */
+@media (prefers-reduced-motion: reduce) {
+  .layer {
+    animation: none;
+    opacity: 0;
+  }
+  .l3 {
+    opacity: 1;
+  }
+  .video {
+    display: none;
+  }
+}
+
+/* The wordmark, as wide as the viewport allows: TRAAG in Unbounded 900
+   is about 4.8em wide. Dividing the box by 5.4 fills it and leaves room
+   for the scrollbar and the 5% punch on every kick. */
+.hero .mark {
+  font-family: var(--font-head), "Unbounded", "Arial Black", sans-serif;
+  font-weight: 900;
+  text-transform: uppercase;
+  font-size: min(calc((100vw - 2 * var(--gutter)) / 6.8), 21vh);
+  line-height: 0.82;
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+  color: var(--paper);
+}
+
+.cue {
+  color: var(--paper);
+}
+
+/* ------------------------------------------------------------------
+   The wordmark hits. Letters slam in a 16th note apart (150ms at 100 bpm)
+   as the loader lifts, each with a squash, a rebound and an ink
+   misregistration flash. The word jolts on the last hit, then kicks on
+   every beat: 600ms, her tempo.
+   ------------------------------------------------------------------ */
+.word {
+  display: inline-block;
+  transform-origin: 50% 90%;
+  animation:
+    impact 280ms cubic-bezier(0.2, 0, 0.2, 1) 2.2s both,
+    kick 600ms cubic-bezier(0.1, 0.6, 0.3, 1) 2.55s infinite;
+}
+.letter {
+  display: inline-block;
+  transform-origin: 50% 100%;
+  animation: slam 440ms cubic-bezier(0.15, 0, 0.2, 1) calc(1.35s + var(--i) * 150ms) backwards;
+}
+@keyframes slam {
+  0% {
+    opacity: 0;
+    transform: translateY(-55%) scale(1.9);
+    text-shadow: 0 0 0 var(--ink);
+  }
+  45% {
+    opacity: 1;
+    transform: translateY(3%) scaleX(1.14) scaleY(0.8);
+    text-shadow: 0.07em 0.05em 0 var(--ink);
+  }
+  70% {
+    transform: translateY(-3%) scaleX(0.96) scaleY(1.06);
+    text-shadow: 0.03em 0.02em 0 var(--ink);
+  }
+  100% {
+    opacity: 1;
+    transform: none;
+    text-shadow: 0 0 0 transparent;
+  }
+}
+@keyframes impact {
+  0% {
+    transform: none;
+  }
+  20% {
+    transform: translate(-6px, 4px) rotate(-0.6deg);
+  }
+  45% {
+    transform: translate(5px, -3px) rotate(0.4deg);
+  }
+  70% {
+    transform: translate(-2px, 1px);
+  }
+  100% {
+    transform: none;
+  }
+}
+/* the kick: a short punch and an ink flash that decays within the beat */
+@keyframes kick {
+  0% {
+    transform: scale(1.035, 1.05);
+    text-shadow: 0.045em 0.035em 0 var(--ink);
+  }
+  35% {
+    transform: none;
+    text-shadow: 0 0 0 rgba(255, 74, 0, 0);
+  }
+  100% {
+    transform: none;
+    text-shadow: 0 0 0 rgba(255, 74, 0, 0);
+  }
+}
