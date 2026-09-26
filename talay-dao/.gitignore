@@ -1,0 +1,19 @@
+# Dependencies and build output
+node_modules
+.next
+out
+*.tsbuildinfo
+next-env.d.ts
+
+# Environment files: secrets never go in git (the site currently needs none)
+.env*
+
+# Vercel CLI project link (project and team IDs)
+.vercel
+
+# Logs
+*.log
+
+# Working notes the site does not need to build: the design-reference
+# teardown of a third-party hotel site. Kept on disk, never published.
+refs/

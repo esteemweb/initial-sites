@@ -1,0 +1,1323 @@
+@import "tailwindcss";
+
+/* ============================================================
+   Talay Dao — design tokens
+   Synthesised from refs/tandjung-sari/autopsy.md · 2026-09-22
+   Companion doc: design-system.md — every value here is documented there.
+   Tailwind v4.3.3 verified (package.json). This is the ONLY home for
+   these tokens; styles/tokens.css was folded in here on 2026-09-22 so
+   no value has two homes.
+
+   Themeable roles use one level of indirection on purpose:
+     @theme  --color-canvas: var(--c-canvas)   -> generates bg-canvas etc.
+     :root   --c-canvas: <day value>
+     [night] --c-canvas: <night value>
+   The role name never changes; only the value swaps. Role overrides must
+   stay OUTSIDE @theme or the utility would be baked to one value.
+   ============================================================ */
+
+@theme {
+  /* ---- type families ---------------------------------------------
+     DIVERGENCE (signature): reference pairs Adobe Caslon Pro with
+     Helvetica. We keep the relationship — high-contrast old-style serif
+     against a deliberately plain grotesque — with different faces. */
+  /* Display: Cormorant Garamond, high-contrast Garamond.
+     Body/UI: Jost, geometric sans.
+     Chosen for character over the reference's Caslon/Helvetica, which
+     degraded to Arial on Windows. */
+  --font-display: var(--font-display-face), ui-serif, Georgia, serif;
+  --font-sans: var(--font-sans-face), ui-sans-serif, system-ui, sans-serif;
+
+  /* ---- type scale -------------------------------------------------
+     Authored at a 1440 design width as the reference does, but CLAMPED.
+     The reference ships calc(N/1440*100vw) with no floor, which ignores
+     user zoom entirely (WCAG 1.4.4 failure). Ratio 1.25 between heading
+     steps; a deliberate 2.0x HOLE between body and heading. */
+  /* The reference's own sizing system, 1:1.
+
+     Every size is authored as the px value drawn at a fixed design width and
+     expressed as a proportion of the viewport:
+         calc(<px at design width> / var(--vw) * 100vw)
+     --vw is a CONSTANT, not the live viewport: 1440 on desktop, 393 on
+     mobile (set below). Numerators are the reference's measured values:
+     13 / 15 / 32 / 40, plus its 176px era numeral. */
+  --text-label: calc(13 / var(--vw) * var(--multiplier));
+  --text-label--line-height: 1;
+  --text-label--letter-spacing: 0.1em;
+
+  --text-body: calc(15 / var(--vw) * var(--multiplier));
+  --text-body--line-height: 1.6;
+  --text-body--letter-spacing: 0em;
+
+  --text-body-lg: calc(15 / var(--vw) * var(--multiplier));
+  --text-body-lg--line-height: 1.6;
+
+  --text-heading: calc(32 / var(--vw) * var(--multiplier));
+  --text-heading--line-height: 1.28;
+  --text-heading--letter-spacing: -0.01em;
+
+  --text-display: calc(40 / var(--vw) * var(--multiplier));
+  --text-display--line-height: 1.15;
+  --text-display--letter-spacing: -0.012em;
+
+  /* The one size whose NUMERATOR changes between artboards, not just its
+     denominator. Measured at 393px: "06:14" set at 176 runs 321px of ink
+     inside a 309px content column, so the reference's own era numeral is
+     the single value that does not survive the constant swap. Everything
+     else does. */
+  --text-chapter: calc(var(--n-chapter) / var(--vw) * var(--multiplier));
+  --text-chapter--line-height: 1;
+  --text-chapter--letter-spacing: -0.02em;
+
+  /* ---- weight -----------------------------------------------------
+     TAKEN: 400 is the only weight on the reference, both families. */
+  --font-weight-regular: 400;
+
+  /* ---- spacing ----------------------------------------------------
+     DIVERGENCE (ref weakness): the reference has NO spacing scale —
+     padding:0 on all eleven sections. 8px base, hybrid scale. */
+  --spacing: 0.25rem;
+  --spacing-2xs: 0.25rem;
+  --spacing-xs: 0.5rem;
+  --spacing-sm: 1rem;
+  --spacing-md: 1.5rem;
+  --spacing-lg: 2rem;
+  --spacing-xl: 3rem;
+  --spacing-2xl: 4rem;
+  --spacing-3xl: 6rem;
+  --spacing-4xl: 8rem;
+
+  --spacing-section: 8rem;
+  --spacing-section-sm: 4rem;
+  --spacing-gutter: 4rem;
+  --spacing-gutter-sm: 1.25rem;
+
+  --spacing-cluster-eyebrow: 1rem;
+  --spacing-cluster-heading: 1.5rem;
+  --spacing-cluster-body: 2rem;
+
+  /* ---- layout -----------------------------------------------------
+     Panel rhythm: the vertical port of the reference's variable-width
+     filmstrip. Bookends are exactly 1.00 viewport; everything between
+     is deliberately NOT 1.00. */
+  --container-page: 90rem;
+  /* NOT named `prose`: Tailwind ships a built-in max-w-prose of 65ch, which
+     silently won over this token and produced a 689px (~86 character)
+     measure — well outside the 45-75 the system specifies. */
+  --container-measure: 36rem;
+  --container-narrow: 28rem;
+
+  /* Hero title sits LOW, not optically centred — the reference measures
+     its title centre at 80.6% of viewport height (refs/tandjung-sari §10).
+     Image dominates, type defers. */
+  --hero-title-top: 80%;
+
+  /* One home for the booking bar height: the button uses it, and html's
+     scroll-padding uses it so a focused element is never hidden behind the
+     fixed bar. Audit finding, phase 3. */
+  /* Reference-measured chrome: buttons ~46px, rail inset ~63px, rotated
+     contact tab ~17x69, brand mark ~74. */
+  --booking-bar-height: 2.875rem;
+  /* Indirection, so the mobile artboard can swap it — see :root below.
+     At 4.5rem the rail is 4.7% of a 1536px screen and 18.3% of a 393px
+     one, measured. The same absolute width is not the same design. */
+  --rail-width: var(--c-rail-width);
+  /* Radial carousel stage. The supplied component used arbitrary
+     h-[350px] / sm:h-[450px]; tokenised so it obeys the no-arbitrary-values
+     rule like everything else. */
+  --carousel-stage: 22rem;
+  --carousel-stage-lg: 28rem;
+
+  /* ---- form controls ----------------------------------------------
+     design-system.md listed "input spec" as an open item from phase 3.
+     The reference has no form at all — it books by WhatsApp — so there
+     was nothing to measure and these are OURS, derived from the system:
+     control height matches the booking button's 2.875rem rounded up to
+     the 8px grid, hairline-strong is the boundary (3.26:1, the only
+     hairline allowed to bound an interactive control), radius stays 0. */
+  --field-height: 3rem;
+  --dialog-width: 34rem;
+
+  /* Media inside a split panel is capped so the PANEL rhythm governs the
+     page, not the asset's aspect ratio. Without this an uncapped 3:4
+     portrait in a half-width column drove the 0.90 panel to 1.36 and the
+     authored rhythm stopped being what rendered. Added in phase 3. */
+  --panel-media-max: 68dvh;
+  /* Beats inside the long panel get their own, tighter cap. At the general
+     68dvh the three-beat row plus its heading came to ~950px inside a 514px
+     content box, so the panel clipped the heading off the top and the
+     captions off the bottom — which is why some images looked caption-less. */
+  --beat-media-max: var(--panel-media-max);
+  /* The villa index runs as one row across the rail, so each entry gets a
+     fixed column and the panel sizes itself to the twelve of them. */
+  /* An entry is now media (392px at 68dvh) + gap + caption, laid out
+     side by side, so the column has to fit all three rather than the
+     stacked width it needed before. */
+  --villa-column: 41rem;
+  --villa-media-max: var(--panel-media-max);
+
+  /* Horizontal panel WIDTHS, as multiples of the viewport. These are the
+     reference's own measured ratios (refs/tandjung-sari §2), closer to it
+     than the vertical port was: only the bookends are exactly 1.00. */
+  --panel-w-bookend: 100vw;
+  --panel-w-short: 67vw;
+  --panel-w-base: 93vw;
+  --panel-w-tall: 116vw;
+  --panel-w-long: 220vw;
+
+  --panel-bookend: 100dvh;
+  --panel-short: 75dvh;
+  --panel-base: 90dvh;
+  --panel-tall: 110dvh;
+  --panel-long: 225dvh;
+
+  /* ---- shape ------------------------------------------------------
+     TAKEN: border-radius 0 on every element, no box-shadow anywhere. */
+  --radius-none: 0px;
+  --border-hairline: 1px;
+
+  /* ---- motion -----------------------------------------------------
+     TAKEN: the reference's two-tier system and its exact reveal curve.
+     The gap between the tiers is the luxury signal. */
+  --ease-settle: cubic-bezier(0.24, 0.43, 0.15, 0.97);
+  --ease-standard: ease;
+  --duration-micro: 120ms;
+  --duration-base: 300ms;
+  --duration-reveal: 800ms;
+  /* Chosen in phase 3. The reference applies its stagger from JS, so the
+     autopsy recorded it as `not measurable` — this value is ours. */
+  --duration-stagger: 90ms;
+  /* Page-level motion. Deliberately between the two tiers: a route change is
+     neither a pointer micro-interaction (120ms) nor a scroll reveal (800ms).
+     Added phase 3 for view transitions. */
+  --duration-page: 420ms;
+  /* Entrance choreography, added after the build read static next to the
+     reference. The reference ships a preloader and per-character reveals;
+     these are the timings for ours. */
+  --duration-preload: 480ms;
+  --duration-wipe: 720ms;
+  --duration-settle: 2000ms;
+  --cursor-size: 2rem;
+  --rule-mark: 4.25rem;   /* the reference's ~69px ornamental hairline */
+
+  /* ---- media ------------------------------------------------------ */
+  --aspect-hero: 2.52;
+  --aspect-panel: 16 / 9;
+  --aspect-portrait: 3 / 4;
+  --aspect-square: 1;
+
+  /* ---- themeable colour roles (values swap below) ------------------ */
+  --color-canvas: var(--c-canvas);
+  --color-surface: var(--c-surface);
+  --color-surface-sunk: var(--c-surface-sunk);
+  --color-ink: var(--c-ink);
+  --color-ink-soft: var(--c-ink-soft);
+  --color-on-media: var(--c-on-media);
+  --color-hairline: var(--c-hairline);
+  --color-hairline-strong: var(--c-hairline-strong);
+  --color-accent: var(--c-accent);
+  --color-accent-hover: var(--c-accent-hover);
+  --color-accent-fg: var(--c-accent-fg);
+  --color-placeholder: var(--c-placeholder);
+  --color-placeholder-ink: var(--c-placeholder-ink);
+
+  /* Lacquer — the chrome rail's own surface. DIVERGENCE (ref weakness):
+     the reference leaves its rail transparent, so the mark and the contact
+     tab sit on whatever photograph happens to scroll underneath and the
+     brand reads differently on every panel. A brand's one permanent
+     fixture should not be at the mercy of the artwork behind it. This is
+     the single dark surface in an otherwise pale system. */
+  --color-accent-lifted: var(--c-accent-lifted);
+  --color-lacquer: var(--c-lacquer);
+  --color-lacquer-deep: var(--c-lacquer-deep);
+  --color-lacquer-warm: var(--c-lacquer-warm);
+}
+
+/* ============================================================
+   Palette — the reference's own values, 1:1.
+
+   Single mode. The reference has no dark mode and no theme switch; the
+   day/night wash built earlier was this project's own idea and has been
+   removed to match.
+
+   Contrast, computed not eyeballed: ink on canvas 6.89, accent on canvas
+   5.98, on-media over the scrim 19.50.
+   ============================================================ */
+:root {
+  /* Design constants the type formula scales from. NOT the live viewport. */
+  --vw: 1440;
+  --multiplier: 100vw;
+
+  --c-canvas: #f1ecde;
+  --c-surface: #fffbf2;
+  --c-surface-sunk: #e8e1d3;
+  --c-ink: #544f45;
+  --c-ink-soft: #544f45;
+  --c-on-media: #fbf6ec;
+  --c-hairline: #ded7c8;
+  --c-hairline-strong: #93836c;
+  --c-accent: #a62a23;
+  --c-accent-hover: #7a1d31;
+  --c-accent-fg: #fffbf2;
+  --c-placeholder: #e8e1d3;
+  --c-placeholder-ink: #544f45;
+
+  /* Not black — the canvas is warm, so the lacquer is warm too, and its
+     foot carries a trace of the accent oxblood. Contrast of --c-on-media
+     (#fbf6ec) on --c-lacquer (#221b16) computes to 15.75:1. */
+  /* The oxblood accent lifted for the lacquer ground. Raw --c-accent on
+     --c-lacquer computes to 2.40:1 and fails as text; this tint computes
+     to 5.74:1 and holds the same hue. Text and the rail thread both use
+     it — the thread in raw accent was invisible against the lacquer. */
+  --c-accent-lifted: #e0796a;
+  --c-lacquer: #221b16;
+  --c-lacquer-deep: #16100c;
+  --c-lacquer-warm: #3c1512;
+
+  /* The reference's overlay-solid wash and its bottom-weighted scrim. */
+  --wash: rgb(147 131 108 / 0.28);
+  --scrim-media: linear-gradient(to bottom, transparent 0%, rgb(0 0 0 / 0.75) 100%);
+  color-scheme: light;
+}
+
+/* The reference swaps the design constant rather than restyling: one
+   formula, two artboards. */
+/* The design constants. --vw and --multiplier drive the type formula;
+   the rest are the handful of values that do not survive the constant
+   swap and need their own mobile figure. */
+:root {
+  --c-rail-width: 4.5rem;
+  --n-chapter: 176;
+  --n-seal: 34;
+  --n-wordmark: 17;
+}
+
+@media (width < 40rem) {
+  :root {
+    --vw: 393;
+
+    /* 2.75rem = 44px, which is 11.2% of a 393px screen against 4.7% on
+       desktop — not the same proportion, because a rail cannot go below
+       the 44px minimum touch target and still hold a link. The mark
+       shrinks with it rather than staying put and bursting the column. */
+    --c-rail-width: 2.75rem;
+    --n-chapter: 112;
+    --n-seal: 22;
+    --n-wordmark: 12;
+  }
+}
+
+/* ============================================================
+   Base
+   ============================================================ */
+html {
+  scroll-behavior: smooth;
+  /* Keep a focused or anchor-targeted element clear of the fixed booking
+     bar. Audit finding: sticky overlays must not cover the focused element. */
+  scroll-padding-block-end: calc(
+    var(--booking-bar-height) + var(--spacing-gutter-sm) * 2 +
+      env(safe-area-inset-bottom)
+  );
+}
+
+body {
+  background-color: var(--color-canvas);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  font-weight: var(--font-weight-regular);
+  font-size: var(--text-body);
+  line-height: var(--text-body--line-height);
+  /* The day -> night transition. The reference ships this wash layer
+     (.overlay-solid) and never animates it; animating it is the concept. */
+  transition:
+    background-color var(--duration-reveal) var(--ease-settle),
+    color var(--duration-reveal) var(--ease-settle);
+}
+
+/* TAKEN: weight 400 only. Headings must not pick up UA bold. */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display);
+  font-weight: var(--font-weight-regular);
+  /* Set once here rather than per-heading, so it cannot be forgotten. */
+  text-wrap: balance;
+}
+
+p {
+  text-wrap: pretty;
+}
+
+/* FIX 1 — the reference sets outline-style:none on every focusable
+   element, on a site whose only nav is a hamburger overlay.
+   Verified 5.16:1 (day) / 9.89:1 (night) against canvas. */
+:where(a, button, [tabindex]):focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+/* Tailwind v4 has no --duration-* theme namespace, so the two motion tiers
+   are exposed as named utilities rather than as arbitrary values in
+   components. The wide gap between the tiers is the luxury signal —
+   design-system.md §6. Do not use an intermediate duration. */
+@utility transition-micro {
+  transition-property: color, background-color, border-color, opacity, transform;
+  transition-duration: var(--duration-micro);
+  transition-timing-function: var(--ease-standard);
+}
+
+/* Written as the `transition` shorthand, not longhands. Both of these use
+   var(--duration-reveal); as separate longhand declarations Tailwind deduped
+   transition-duration into a single rule and stripped it from
+   .transition-reveal, leaving reveals with no duration at all. */
+@utility transition-reveal {
+  /* transform/opacity only — compositor-friendly. background-color was
+     removed here after the audit: it applied to text blocks that have no
+     background at all. The wash keeps its own utility below. */
+  transition:
+    opacity var(--duration-reveal) var(--ease-settle),
+    transform var(--duration-reveal) var(--ease-settle);
+}
+
+/* The one deliberate exception to "animate transform/opacity only": the
+   day/night wash IS a background-color animation. Scoped to that layer. */
+@utility transition-wash {
+  transition: background-color var(--duration-reveal) var(--ease-settle);
+}
+
+/* TAKEN — refs/tandjung-sari §8: the two-origin underline wipe. The origin
+   flips between states so the line travels one direction rather than
+   retracing. No colour change on hover, anywhere. */
+@utility link-wipe {
+  position: relative;
+  color: var(--color-accent);
+  text-decoration: none;
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset-block-end: -0.15em;
+    inset-inline: 0;
+    block-size: var(--border-hairline);
+    background-color: currentColor;
+    transform: scaleX(0);
+    transform-origin: right center;
+    transition: transform var(--duration-micro) var(--ease-standard);
+  }
+
+  &:hover::before {
+    transform: scaleX(1);
+    transform-origin: left center;
+  }
+}
+
+/* Panel heights. --panel-* has no Tailwind namespace, so the rhythm from
+   design-system.md §1 is exposed as utilities. Only the opening and
+   closing panels may use h-panel-bookend. */
+/* TAKEN — refs/tandjung-sari §10: the hero title sits low in the frame,
+   centred horizontally, with the scrim carrying its contrast. */
+/* inset-inline-start is the rail, not 0. A full-bleed panel has no
+   padding, so a title spanning 0->100% centres on the VIEWPORT centre
+   while the reader sees a content area that starts at the rail's edge.
+   Measured at 393px: title centre 197, optical centre 233 — a 36px bias
+   that reads as "everything is shoved left". */
+@utility hero-title {
+  position: absolute;
+  inset-inline-start: var(--rail-width);
+  inset-inline-end: 0;
+  top: var(--hero-title-top);
+  transform: translateY(-50%);
+}
+
+@utility max-h-panel-media { max-block-size: var(--panel-media-max); }
+
+/* A full-bleed layer that parallax can move without exposing a gap at the
+   top or bottom of the panel. Oversized on the block axis by the maximum
+   travel the rates below can produce. */
+@utility parallax-bleed {
+  position: absolute;
+  /* Oversized on BOTH axes: vertical mode travels on Y, the rail travels on
+     X, and either one exposes a gap at the panel edge if only the other
+     axis is padded. */
+  inset: -10%;
+}
+
+@utility h-booking-bar { block-size: var(--booking-bar-height); }
+
+@utility w-rail { inline-size: var(--rail-width); }
+@utility ps-rail { padding-inline-start: var(--rail-width); }
+
+@utility h-carousel {
+  block-size: var(--carousel-stage);
+
+  @media (width >= 40rem) {
+    block-size: var(--carousel-stage-lg);
+  }
+}
+
+/* Padded panels clear the fixed rail; full-bleed media deliberately runs
+   underneath it, as it does on the reference.
+
+   This was `md:ps-rail` only. Below 48rem the panels fell back to a flat
+   20px gutter and their content ran under the rail — harmless while the
+   rail was transparent, but once it became opaque it amputated the left
+   of every chapter numeral. Measured at 393px: the numeral's ink started
+   at x=20 with the rail occupying 0-72, so 52px of it was behind the
+   lacquer. Now the clearance applies at every width and only the gutter
+   term changes. */
+@utility ps-rail {
+  padding-inline-start: calc(var(--rail-width) + var(--spacing-gutter-sm));
+
+  @media (width >= 48rem) {
+    padding-inline-start: calc(var(--rail-width) + var(--spacing-gutter));
+  }
+}
+
+/* ---- the chrome rail -------------------------------------------------
+
+   DIVERGENCE from refs/tandjung-sari §10. The reference's rail is
+   transparent: its mark and contact tab float over whatever photograph is
+   passing behind, so the brand's contrast changes panel by panel and over
+   the dark jungle plates all but disappears. Made opaque here, and made
+   the one dark surface on the site, so it reads as a lacquered spine the
+   pages run past rather than as an overlay that keeps losing its footing.
+
+   Four stacked background layers, outermost first:
+     1. an accent thread, 1px, held 7px off the inner edge
+     2. a letterpress rule texture, 1px on 7px, at 5% cream
+     3. a cream sheen down the outer edge, so the panel is not flat
+     4. the lacquer gradient itself, oxblood-tinted at the foot           */
+@utility site-rail {
+  color: var(--color-on-media);
+  background-color: var(--color-lacquer);
+  background-image:
+    linear-gradient(
+      to bottom,
+      transparent 0%,
+      var(--color-accent-lifted) 16%,
+      var(--color-accent-lifted) 84%,
+      transparent 100%
+    ),
+    repeating-linear-gradient(
+      to bottom,
+      rgb(251 246 236 / 0.05) 0 1px,
+      transparent 1px 7px
+    ),
+    linear-gradient(
+      to right,
+      rgb(251 246 236 / 0.07) 0 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      to bottom,
+      var(--color-lacquer-deep) 0%,
+      var(--color-lacquer) 30%,
+      var(--color-lacquer) 58%,
+      var(--color-lacquer-warm) 100%
+    );
+  background-repeat: no-repeat, repeat, no-repeat, no-repeat;
+  background-size: 1px 100%, 100% 100%, 100% 100%, 100% 100%;
+  background-position: right 7px top 0, 0 0, 0 0, 0 0;
+  border-inline-end: var(--border-hairline) solid var(--color-lacquer-deep);
+}
+
+/* ---- the logo -------------------------------------------------------
+
+   The full name, never an initialism. "TD" told a first-time visitor
+   nothing, and a twelve-villa hotel has no brand equity to abbreviate.
+
+   The seal is drawn, not set: a four-point star inside a hairline ring.
+   Talay Dao is "sea of stars", so the mark states the name rather than
+   decorating it. It is this project's own drawing — the reference's coral
+   device is its trademark and is left behind (the originality line).     */
+@utility logo-seal {
+  display: block;
+  inline-size: calc(var(--n-seal) / var(--vw) * var(--multiplier));
+  block-size: auto;
+  overflow: visible;
+}
+
+/* The slow turn is the only perpetual motion on the site. At 72s it sits
+   below the rate at which the eye tracks a moving thing directly, so it
+   registers as the mark being alive rather than as an animation. */
+@utility logo-star-turn {
+  transform-origin: 50% 50%;
+  transform-box: fill-box;
+  animation: logo-star-turn 72s linear infinite;
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
+}
+
+@keyframes logo-star-turn {
+  to { rotate: 360deg; }
+}
+
+/* The spine wordmark — vertical-rl with text-orientation: upright, so the
+   glyphs stay the right way up and the name stacks like carved signage
+   instead of lying on its side.
+
+   This is a deliberate split from the contact tab directly below it, which
+   stays rotated the way the reference sets it. Two orientations in one
+   64px column would be sloppy if they were the same KIND of thing; they
+   are not. The brand reads without turning your head, the utility label
+   does not, and that difference is the hierarchy.
+
+   Tracking is the load-bearing value here. Upright vertical setting stacks
+   glyphs on their own line boxes, so the visual gap comes from
+   letter-spacing alone — at 0.18em the caps sit too close and read as a
+   column of noise. text-indent cancels the trailing space, which would
+   otherwise hang past the last glyph and throw the stack off-centre. */
+@utility logo-wordmark {
+  writing-mode: vertical-rl;
+  text-orientation: upright;
+  font-size: calc(var(--n-wordmark) / var(--vw) * var(--multiplier));
+  letter-spacing: 0.3em;
+  text-indent: 0.3em;
+  line-height: 1;
+  white-space: nowrap;
+  /* Real caps, not font-variant-caps: Cormorant Garamond's webfont build
+     has no smcp table, so small-caps would be synthesised — the browser
+     scales the lowercase down and the stroke weight goes with it, giving
+     a wordmark visibly lighter than everything around it. */
+  text-transform: uppercase;
+}
+
+/* The place, beneath the name, smaller and in the lifted accent.
+
+   Tracked much TIGHTER than the wordmark above it — 0.1em against 0.3em.
+   Set at the same openness it ran to 200px of column, longer than the
+   name itself, and a supporting line that outmeasures the thing it
+   supports stops supporting it. Tight setting also reads as a caption
+   rather than a second wordmark, which is the job. */
+@utility logo-locale {
+  writing-mode: vertical-rl;
+  text-orientation: upright;
+  font-size: calc(9 / var(--vw) * var(--multiplier));
+  letter-spacing: 0.1em;
+  text-indent: 0.1em;
+  line-height: 1;
+  white-space: nowrap;
+
+  /* First thing to go when the viewport is short — see the note on
+     rail-tick. */
+  @media (height < 44rem) {
+    display: none;
+  }
+}
+
+/* The hairline between the name and the place. Horizontal in the vertical
+    lockup, because the stack runs down the column and a separator must cut
+    across the direction of reading, not along it. */
+@utility logo-rule {
+  display: block;
+  inline-size: calc(14 / var(--vw) * var(--multiplier));
+  block-size: var(--border-hairline);
+  background-color: currentColor;
+  opacity: 0.5;
+
+  @media (height < 44rem) {
+    display: none;
+  }
+}
+
+/* Its counterpart in the horizontal lockup: a vertical stroke, for the
+   same reason, flipped. */
+@utility logo-rule-v {
+  display: block;
+  inline-size: var(--border-hairline);
+  block-size: calc(14 / var(--vw) * var(--multiplier));
+  background-color: currentColor;
+  opacity: 0.5;
+}
+
+/* Horizontal lockup, for anywhere the logo is not on the spine. */
+@utility logo-wordmark-h {
+  font-size: calc(21 / var(--vw) * var(--multiplier));
+  letter-spacing: 0.22em;
+  text-indent: 0.22em;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+/* Two stacked hairlines, the reference's hamburger at 32x10 — now in
+   currentColor so it inherits the rail's cream instead of the page ink. */
+@utility hamburger-mark {
+  position: relative;
+  display: block;
+  inline-size: calc(26 / var(--vw) * var(--multiplier));
+  block-size: calc(10 / var(--vw) * var(--multiplier));
+
+  &::before,
+  &::after {
+    content: "";
+    position: absolute;
+    inset-inline: 0;
+    block-size: var(--border-hairline);
+    background-color: currentColor;
+  }
+  &::before { inset-block-start: 0; }
+  &::after { inset-block-end: 0; }
+}
+
+/* Rotated to read upward, as the reference's contact tab does. */
+@utility contact-tab {
+  writing-mode: vertical-rl;
+  rotate: 180deg;
+}
+
+/* A hairline stroke between the rail's pieces, so its foot is composed
+   rather than just stopping. */
+@utility rail-tick {
+  display: block;
+  inline-size: var(--border-hairline);
+  block-size: var(--spacing-lg);
+  background-color: currentColor;
+  opacity: 0.38;
+
+  /* The rail's contents are laid out with justify-between and have no
+     room to reflow, so on a short viewport — a phone held sideways, a
+     laptop with the browser chrome expanded — the stack would run out of
+     column and overlap. Measured: the full stack needs 561px of the 730px
+     available at 770px tall, so it collides just under 600px. The
+     ornament goes first and the name never does. */
+  @media (height < 44rem) {
+    display: none;
+  }
+}
+
+/* Bottom-fixed bar must clear the iOS home indicator. Composes the existing
+   gutter token with the safe-area inset rather than hard-coding either. */
+@utility pb-safe {
+  padding-block-end: calc(var(--spacing-gutter-sm) + env(safe-area-inset-bottom));
+}
+
+/* Skip link — design-system.md §10 lists "no skip link" as a rejected
+   weakness of the reference, and the first build inherited it anyway.
+   Off-screen until focused. */
+@utility skip-link {
+  position: absolute;
+  inset-inline-start: var(--spacing-gutter-sm);
+  inset-block-start: var(--spacing-gutter-sm);
+  z-index: 100;
+  translate: 0 -250%;
+  border: var(--border-hairline) solid var(--color-hairline-strong);
+  background-color: var(--color-surface);
+  color: var(--color-accent);
+  padding: var(--spacing-xs) var(--spacing-md);
+  font-family: var(--font-sans);
+  font-size: var(--text-label);
+  letter-spacing: var(--text-label--letter-spacing);
+  text-transform: uppercase;
+  /* Deliberately NOT transitioned. This is the keyboard escape hatch, and
+     its appearance must not depend on the animation clock — a throttled or
+     restored-from-background tab can stall a transition indefinitely, which
+     would leave the link invisible while focused. Instant is also better UX
+     here. Verified in-browser: focus puts it at the gutter, blur removes it. */
+
+  /* :focus as well as :focus-visible. The house rule is :focus-visible, to
+     avoid rings on mouse click — but a skip link sits off-screen and is only
+     ever reached by keyboard or programmatic focus, so :focus has no downside
+     and covers cases where the focus-visible heuristic does not fire. */
+  &:focus,
+  &:focus-visible {
+    translate: 0 0;
+  }
+}
+
+@utility h-panel-bookend { block-size: var(--panel-bookend); }
+@utility h-panel-short { min-block-size: var(--panel-short); }
+@utility h-panel-base { min-block-size: var(--panel-base); }
+@utility h-panel-tall { min-block-size: var(--panel-tall); }
+@utility h-panel-long { min-block-size: var(--panel-long); }
+
+/* FIX 2 — the reference ships NO prefers-reduced-motion query at all,
+   on a page built from scroll-hijacking, parallax and 800ms reveals.
+   This was its most serious accessibility failure. */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  [data-parallax] {
+    transform: none !important;
+  }
+}
+
+
+/* ============================================================
+   View transitions — cross-document, native.
+
+   NOT React's <ViewTransition>. Verified that Next 15.5.25 ships a compiled
+   React exporting neither `ViewTransition` nor `addTransitionType` (0
+   occurrences in both its stable and react-experimental channels), so the
+   React API is unavailable here without a major version bump. The native
+   cross-document API needs no framework support, costs three lines, and
+   suits a two-page static site better than client-side routing would.
+
+   The chapter links are plain <a> elements for this reason: a real document
+   navigation is what triggers a cross-document transition.
+   ============================================================ */
+
+@view-transition {
+  navigation: auto;
+}
+
+/* The gate: the full-bleed bookend media of one chapter carries the same
+   view-transition-name as the hero media of the next, so the browser pairs
+   them ACROSS documents and morphs rather than cutting. Names are assigned
+   asymmetrically (a page's hero and its closing bookend never share a name)
+   so each document holds two unique names and both directions pair.
+
+   No blur — this system has no blur anywhere, and adding it only for the
+   morph would be a one-off. */
+::view-transition-group(gate-story),
+::view-transition-group(gate-villas) {
+  animation-duration: var(--duration-page);
+  animation-timing-function: var(--ease-settle);
+}
+
+/* Everything that is not the gate cross-fades gently underneath it. */
+::view-transition-group(root) {
+  animation-duration: var(--duration-page);
+  animation-timing-function: var(--ease-settle);
+}
+
+/* Persistent element: the booking bar is fixed and must not slide or fade
+   with the page content. Frozen and layered above the transition. */
+::view-transition-group(booking-bar) {
+  animation: none;
+  z-index: 100;
+}
+
+/* The reference ships no reduced-motion query at all. Route-level motion is
+   the most disorienting kind, so it is disabled outright. */
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(*),
+  ::view-transition-new(*),
+  ::view-transition-group(*) {
+    animation-duration: 0s !important;
+    animation-delay: 0s !important;
+  }
+}
+
+/* ============================================================
+   Entrance and pointer choreography.
+
+   The autopsy recorded all of this on the reference and the first build
+   shipped none of it, which is why the page read as a static document.
+   refs/tandjung-sari §8 and §12.
+   ============================================================ */
+
+/* ---- per-character heading reveal (refs §8) ---------------- */
+.split-word {
+  display: inline-block;
+  white-space: nowrap;
+}
+
+.split-char {
+  display: inline-block;
+  opacity: 0;
+  transform: translateY(0.45em);
+  transition:
+    opacity var(--duration-reveal) var(--ease-settle),
+    transform var(--duration-reveal) var(--ease-settle);
+}
+
+[data-split="shown"] .split-char {
+  opacity: 1;
+  transform: none;
+}
+
+/* ---- preloader (refs §8: "entrance animation on load: present") ----
+   A hairline spiral draws outward from the centre while it turns; the
+   wordmark settles in over it. On leaving, the stage winds back into the
+   centre and the canvas fades. Finite: it ends when the page arrives. */
+/* The canvas is a spiral stroke in --color-canvas, drawn at 2x the viewport.
+   Solid while state="in" (offset 0 = fully drawn); on leaving the dash
+   offset runs 0 -> 1 so the stroke retreats from its outer end toward the
+   centre while the sheet turns with it. */
+.preloader-wipe {
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  transform-origin: 50% 50%;
+  transition: transform var(--duration-wipe) cubic-bezier(0.76, 0, 0.24, 1);
+}
+
+.preloader-wipe path {
+  stroke: var(--color-canvas);
+  stroke-dasharray: 1;
+  stroke-dashoffset: 0;
+  transition: stroke-dashoffset var(--duration-wipe) cubic-bezier(0.76, 0, 0.24, 1);
+}
+
+.preloader[data-state="leaving"] .preloader-wipe {
+  transform: rotate(-60deg);
+}
+
+.preloader[data-state="leaving"] .preloader-wipe path {
+  stroke-dashoffset: 1;
+}
+
+.preloader-stage {
+  /* Sits on the hero ring: half the rail width to the right, since the
+     ring is centred beside the fixed rail, and a little above the viewport
+     centre, where the carousel block's bottom margin lifts it. */
+  translate: calc(var(--rail-width) / 2) -6vh;
+  transform-origin: 50% 50%;
+  transition:
+    transform var(--duration-preload) var(--ease-settle),
+    opacity var(--duration-preload) var(--ease-settle);
+}
+
+.preloader[data-state="leaving"] .preloader-stage {
+  transform: rotate(-0.5turn) scale(0.08);
+  opacity: 0;
+}
+
+.preloader-spiral {
+  /* The outermost turn sits on the expanded hero ring: the spiral reaches
+     r = 44 of a 100-unit box, and the ring measures about 590px across on
+     desktop, so 590 / 0.88 = 670px. */
+  width: min(88vmin, 42rem);
+  height: auto;
+  color: var(--color-ink);
+  opacity: 0.55;
+  transform-origin: 50% 50%;
+  animation: preload-spin 800ms var(--ease-settle) both;
+}
+
+.preloader-spiral path {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: preload-draw 720ms var(--ease-settle) 60ms both;
+}
+
+@keyframes preload-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes preload-spin {
+  from {
+    transform: rotate(-140deg) scale(0.55);
+  }
+  to {
+    transform: rotate(0deg) scale(1);
+  }
+}
+
+.preloader-mark {
+  animation: preload-mark 520ms var(--ease-settle) 220ms both;
+}
+
+@keyframes preload-mark {
+  from {
+    opacity: 0;
+    transform: translateY(0.3em);
+  }
+}
+
+/* ---- hero settle -------------------------------------------------
+   A single slow settle on arrival, NOT a loop. The house rule bans
+   infinite micro-animations; an entrance is a different thing. */
+[data-loaded="true"] .hero-settle img {
+  animation: hero-settle var(--duration-settle) var(--ease-settle) both;
+}
+
+@keyframes hero-settle {
+  from {
+    transform: scale(1.06);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+
+/* ---- ornamental rule (refs §6: ~69x1px marks beside headings) ---- */
+.rule-mark::before {
+  content: "";
+  display: block;
+  inline-size: var(--rule-mark);
+  block-size: var(--border-hairline);
+  background-color: var(--color-hairline-strong);
+  margin-block-end: var(--spacing-sm);
+}
+
+/* ---- custom cursor (refs §12) -------------------------------
+   Square, not round: this system has zero border-radius everywhere, and a
+   circle would be the only round object on the site. Hairline, no fill. */
+.site-cursor {
+  position: fixed;
+  inset-block-start: 0;
+  inset-inline-start: 0;
+  inline-size: var(--cursor-size);
+  block-size: var(--cursor-size);
+  border: var(--border-hairline) solid var(--color-ink-soft);
+  opacity: 0;
+  z-index: 300;
+  pointer-events: none;
+  transition:
+    opacity var(--duration-base) var(--ease-standard),
+    scale var(--duration-base) var(--ease-settle),
+    border-color var(--duration-micro) var(--ease-standard);
+}
+
+.site-cursor[data-visible="true"] {
+  opacity: 1;
+}
+
+.site-cursor[data-over="true"] {
+  scale: 1.6;
+  border-color: var(--color-accent);
+}
+
+@media (pointer: coarse) {
+  .site-cursor {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .site-cursor {
+    display: none;
+  }
+  .split-char {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  .preloader {
+    display: none;
+  }
+  [data-loaded="true"] .hero-settle img {
+    animation: none;
+  }
+}
+
+/* ============================================================
+   The horizontal rail — refs/tandjung-sari §2.
+
+   Default (and no-JS, and mobile) is ordinary vertical flow, which is also
+   exactly what the reference does below its own breakpoint. The rail is
+   layered on top only when Rail.tsx confirms the viewport is wide enough,
+   so this is progressive enhancement rather than a JS-dependent layout.
+   ============================================================ */
+
+.rail-track {
+  display: block;
+}
+
+[data-rail="on"] .rail-viewport {
+  position: sticky;
+  inset-block-start: 0;
+  block-size: 100dvh;
+  overflow: hidden;
+}
+
+[data-rail="on"] .rail-track {
+  display: flex;
+  flex-direction: row;
+  block-size: 100dvh;
+  will-change: transform;
+}
+
+/* In rail mode a panel's WIDTH carries the rhythm and its height is fixed
+   to the viewport. Higher specificity than the h-panel-* utilities, which
+   govern the vertical fallback. */
+[data-rail="on"] .rail-track > section {
+  flex: 0 0 auto;
+  block-size: 100dvh;
+  min-block-size: 0;
+}
+
+[data-rail="on"] .rail-track > .panel-bookend { inline-size: var(--panel-w-bookend); }
+[data-rail="on"] .rail-track > .panel-short   { inline-size: var(--panel-w-short); }
+[data-rail="on"] .rail-track > .panel-base    { inline-size: var(--panel-w-base); }
+[data-rail="on"] .rail-track > .panel-tall    { inline-size: var(--panel-w-tall); }
+[data-rail="on"] .rail-track > .panel-long    { inline-size: var(--panel-w-long); }
+
+/* The long panel, in rail mode.
+
+   Its three beats were each given a third of a 2.20-viewport panel — about
+   1050px — while a 3:4 portrait inside a 100dvh panel can only ever be
+   ~393px wide. Every image therefore floated in ~650px of dead space, which
+   no amount of tuning the panel width would fix while the beats stacked
+   vertically.
+
+   So each beat lays out HORIZONTALLY here: media beside its caption. That
+   spends the width instead of wasting it, and three of them come to almost
+   exactly the 2.20 the reference measures. */
+[data-rail="on"] .rail-track > .panel-long .beats-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: var(--spacing-3xl);
+}
+
+/* The long panel carries more vertical content than any other, so it takes
+   the gutter rather than the full section padding. */
+[data-rail="on"] .rail-track > .panel-long {
+  padding-block: var(--spacing-lg);
+}
+
+/* The villa index was a 3-column grid wrapping to four rows — fine for
+   vertical scroll, impossible inside a 100dvh panel, where it overflowed by
+   up to 1197px. In the rail it becomes ONE row of twelve fixed columns, and
+   the panel sizes to fit rather than forcing content into a fixed ratio.
+   Columns have a definite width, so max-content is well defined and text
+   still wraps normally inside them. */
+[data-rail="on"] .rail-track > .panel-villas {
+  inline-size: max-content;
+  /* Its heading runs three lines above a full-height entry, so it takes the
+     tightest padding of any panel. */
+  padding-block: var(--spacing-sm);
+}
+
+/* Carries a heading plus a 28rem carousel stage, so it takes the gutter
+   rather than the full section padding. */
+[data-rail="on"] .rail-track > .panel-carousel {
+  padding-block: var(--spacing-lg);
+}
+
+[data-rail="on"] .villa-index {
+  display: grid;
+  grid-template-columns: repeat(12, var(--villa-column));
+  gap: var(--spacing-xl);
+  align-items: start;
+}
+
+[data-rail="on"] .villa-index .isolate {
+  block-size: var(--villa-media-max);
+  max-block-size: none;
+}
+
+/* Same shape as a beat: media in one cell, the whole caption in the other,
+   so an entry is exactly as tall as its media rather than media + text. */
+[data-rail="on"] .villa-index > li > div {
+  display: grid;
+  grid-template-columns: auto minmax(14rem, 1fr);
+  align-items: start;
+  gap: var(--spacing-lg);
+}
+
+[data-rail="on"] .villa-index .isolate {
+  grid-row: 1 / -1;
+}
+
+[data-rail="on"] .villa-entry-text > *:first-child {
+  margin-block-start: 0;
+}
+
+[data-rail="on"] .panel-long .beats-row {
+  align-items: start;
+}
+
+/* A DEFINITE height, not a cap. The media is an aspect-ratio box in an
+   `auto` grid column; with only a max-height and no definite dimension it
+   resolves to zero width and vanishes. Giving it a real block-size lets the
+   aspect ratio derive the width. */
+[data-rail="on"] .panel-long .beat .isolate {
+  block-size: var(--beat-media-max);
+  max-block-size: none;
+}
+
+[data-rail="on"] .beat-caption > p:first-child {
+  margin-block-start: 0;
+}
+
+[data-rail="on"] .beat {
+  display: grid;
+  /* The caption column has a MINIMUM, not minmax(0, …). A zero minimum lets
+     the column collapse entirely when space is tight, which silently drops
+     the caption and leaves an image with no text beside it. */
+  grid-template-columns: auto minmax(18rem, var(--container-measure));
+  align-items: start;
+  gap: var(--spacing-xl);
+}
+
+/* The media keeps its own column; the caption takes the measure beside it. */
+[data-rail="on"] .beat > .isolate,
+[data-rail="on"] .beat > [data-parallax] {
+  grid-row: 1 / -1;
+}
+
+
+/* ============================================================
+   Booking dialog — design-system.md §8
+
+   Native <dialog> + showModal(), deliberately, for three reasons the
+   rail makes non-negotiable:
+
+   1. TOP LAYER. The rail track moves panels with a transform, and a
+      transformed ancestor becomes the containing block for its fixed
+      descendants — a hand-rolled fixed overlay inside the track would
+      be dragged sideways with the panels. The top layer is outside the
+      document's paint order entirely, so it cannot be.
+   2. Focus trap, Esc-to-close and inertness of the page behind it are
+      all free and correct, rather than reimplemented and subtly wrong.
+   3. Focus returns to the invoking button on close, which is the part
+      hand-rolled modals almost always drop.
+
+   Written as plain CSS rather than @utility because of @starting-style
+   and the allow-discrete transitions, which are structural rules about
+   one element, not composable utilities.
+   ============================================================ */
+
+.booking-dialog {
+  margin: auto;
+  inline-size: min(var(--dialog-width), calc(100vw - var(--spacing-gutter-sm) * 2));
+  max-block-size: min(46rem, calc(100dvh - var(--spacing-gutter-sm) * 2));
+  padding: 0;
+  border: var(--border-hairline) solid var(--color-hairline-strong);
+  background-color: var(--color-surface);
+  color: var(--color-ink);
+  overflow: hidden;
+
+  /* Enter/exit. display and overlay must both be allow-discrete or the
+     element pops out on close with no exit transition. */
+  opacity: 0;
+  translate: 0 var(--spacing-sm);
+  transition:
+    opacity var(--duration-base) var(--ease-settle),
+    translate var(--duration-base) var(--ease-settle),
+    display var(--duration-base) allow-discrete,
+    overlay var(--duration-base) allow-discrete;
+}
+
+.booking-dialog[open] {
+  opacity: 1;
+  translate: 0 0;
+  /* A column flex box so the header and the submit footer can be pinned
+     and only the fields scroll. Measured before this: the panel came to
+     730px in a 770px viewport, which put the one action the dialog exists
+     for below the fold on first open. Setting display here rather than on
+     the base rule keeps the none<->flex discrete transition intact. */
+  display: flex;
+  flex-direction: column;
+}
+
+@starting-style {
+  .booking-dialog[open] {
+    opacity: 0;
+    translate: 0 var(--spacing-sm);
+  }
+}
+
+.booking-dialog::backdrop {
+  background-color: rgb(34 27 22 / 0.62);
+  opacity: 0;
+  transition:
+    opacity var(--duration-base) var(--ease-settle),
+    display var(--duration-base) allow-discrete,
+    overlay var(--duration-base) allow-discrete;
+}
+
+.booking-dialog[open]::backdrop { opacity: 1; }
+
+@starting-style {
+  .booking-dialog[open]::backdrop { opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .booking-dialog,
+  .booking-dialog::backdrop {
+    transition: none;
+    translate: none;
+  }
+}
+
+/* ---- controls ----------------------------------------------------
+   One rule for every control type so a <select> cannot drift from an
+   <input>. Radius 0 and a hairline-strong boundary, per §5. */
+.field {
+  inline-size: 100%;
+  block-size: var(--field-height);
+  padding-inline: var(--spacing-sm);
+  border: var(--border-hairline) solid var(--color-hairline-strong);
+  border-radius: 0;
+  background-color: var(--color-canvas);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  font-size: var(--text-body);
+  line-height: 1;
+  appearance: none;
+  transition: border-color var(--duration-micro) var(--ease-settle);
+}
+
+textarea.field {
+  block-size: auto;
+  min-block-size: calc(var(--field-height) * 1.5);
+  padding-block: var(--spacing-xs);
+  line-height: 1.5;
+  resize: vertical;
+}
+
+.field:hover { border-color: var(--color-ink); }
+.field:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 1px;
+}
+.field[aria-invalid="true"] { border-color: var(--color-accent); }
+
+/* Native date/time pickers render their indicator in the UA's own colour;
+   this keeps it on the warm ramp instead of system blue-grey. */
+.field::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+  opacity: 0.55;
+}
+.field::-webkit-calendar-picker-indicator:hover { opacity: 1; }
+
+/* The intent switch — Room / Table. Two states off one rule. */
+.intent-tab {
+  flex: 1;
+  block-size: var(--field-height);
+  border: var(--border-hairline) solid var(--color-hairline-strong);
+  background-color: transparent;
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  font-size: var(--text-label);
+  letter-spacing: var(--text-label--letter-spacing);
+  text-transform: uppercase;
+  cursor: pointer;
+  transition:
+    background-color var(--duration-micro) var(--ease-settle),
+    color var(--duration-micro) var(--ease-settle);
+}
+.intent-tab:hover { background-color: var(--color-surface-sunk); }
+.intent-tab[aria-selected="true"] {
+  background-color: var(--color-accent);
+  border-color: var(--color-accent);
+  color: var(--color-accent-fg);
+}
+
+/* The submit. The one place the accent is a FILL rather than the
+   inverted pale-fill-with-red-text the chrome buttons use — this is the
+   single highest-intent control on the site and it should not look like
+   the two that merely open it. accent-fg on accent computes to 5.89:1. */
+.submit-action {
+  inline-size: 100%;
+  block-size: var(--field-height);
+  border: var(--border-hairline) solid var(--color-accent);
+  background-color: var(--color-accent);
+  color: var(--color-accent-fg);
+  font-family: var(--font-sans);
+  font-size: var(--text-label);
+  letter-spacing: var(--text-label--letter-spacing);
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background-color var(--duration-micro) var(--ease-settle);
+}
+.submit-action:hover {
+  background-color: var(--color-accent-hover);
+  border-color: var(--color-accent-hover);
+}

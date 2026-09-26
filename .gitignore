@@ -9,6 +9,7 @@
 !/Corneum/
 !/overprint/
 !/leafandcherry/
+!/talay-dao/
 
 # Never publish security audit reports
 **/SECURITY-AUDIT.md
