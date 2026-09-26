@@ -5,7 +5,7 @@
 # Sites approved for the public repo (add one line per audited site)
 !/traag/
 !/askforthemoon/
-
+!/le-comble/
 
 # Never publish security audit reports
 **/SECURITY-AUDIT.md

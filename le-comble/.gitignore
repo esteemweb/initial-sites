@@ -1,0 +1,12 @@
+node_modules
+.next
+out
+*.tsbuildinfo
+next-env.d.ts
+.env*
+
+# Vercel CLI project link (project and team IDs) — SECURITY-AUDIT.md item 4
+.vercel
+
+# npm and other error logs
+*.log
