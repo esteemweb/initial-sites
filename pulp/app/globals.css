@@ -1,0 +1,597 @@
+@import "tailwindcss";
+
+/* ---------------------------------------------------------------------------
+   PULP — design tokens
+   Source of truth: DESIGN.md. Nothing here may be invented; nothing there
+   may be missing. Default Tailwind scales are cleared so off-system values
+   are not reachable by accident.
+   --------------------------------------------------------------------------- */
+
+@theme {
+  /* --- Colour (DESIGN.md §2) ------------------------------------------- */
+  /* Two neutrals, three spot inks, one hairline. That is the palette.
+     `volt` takes ink text, never white — acid yellow under white is
+     unreadable, and it is the one ink that inverts. */
+  --color-*: initial;
+  --color-inherit: inherit;
+  --color-current: currentColor;
+  --color-transparent: transparent;
+
+  /* Two neutrals and three spot inks. One ink per section (DESIGN.md §2).
+     `rose` replaced a fluorescent pink that shouted over everything and
+     failed AA under white text; clay reads as the same hue at an undertone
+     and clears 4.5:1. The garment colourway "Fluoro" keeps the hot pink —
+     that is content, and its photographs are that colour. */
+  /* `paper` is the ground the whole site sits on and `page` is a sheet lying
+     on it — a panel, a dialog, a product shot. Keeping them separate is what
+     lets the catalogue photography, which is shot on seamless white, read as
+     stock on a press table rather than as white boxes floating on a colour. */
+  --color-paper: #f4f1e8;
+  --color-page: #ffffff;
+  --color-ink: #111111;
+  --color-rose: #b8566a;
+  --color-ultra: #1b4dff;
+  --color-volt: #d9ff00;
+  --color-rule: #e6e6e6;
+
+  /* --- Typefaces (DESIGN.md §3) ---------------------------------------- */
+  --font-*: initial;
+  --font-display: var(--font-bricolage), "Arial Black", sans-serif;
+  --font-body: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-label: var(--font-space-mono), ui-monospace, monospace;
+
+  /* --- Type scale (DESIGN.md §3) --------------------------------------- */
+  /* Seven roles, consumed through the `type-*` utilities below, never as
+     raw font-size utilities. The default text-* scale is removed so no
+     eighth size can creep in. */
+  --text-*: initial;
+
+  /* --- Spacing ramp (DESIGN.md §5) ------------------------------------- */
+  /* 8 / 16 / 24 / 40 / 48 / 64 / 80 / 96 / 160 and nothing else. Tokens are
+     named for their pixel value, so `py-160` in code is 160px in the doc. */
+  --spacing: initial;
+  --spacing-0: 0px;
+  --spacing-8: 8px;
+  --spacing-16: 16px;
+  --spacing-24: 24px;
+  --spacing-40: 40px;
+  --spacing-48: 48px;
+  --spacing-64: 64px;
+  --spacing-80: 80px;
+  --spacing-96: 96px;
+  --spacing-160: 160px;
+
+  /* --- Corners (DESIGN.md §4) ------------------------------------------ */
+  /* Square corners throughout, no exceptions. The scale is removed so there
+     is no `rounded-*` utility to reach for. */
+  --radius-*: initial;
+
+  /* --- Depth (DESIGN.md §6) -------------------------------------------- */
+  /* There is none. No shadow utilities exist. */
+  --shadow-*: initial;
+  --inset-shadow-*: initial;
+  --drop-shadow-*: initial;
+  --blur-*: initial;
+
+  /* --- Breakpoints (DESIGN.md §8) -------------------------------------- */
+  /* Base styles are written at 360px. */
+  --breakpoint-*: initial;
+  --breakpoint-tablet: 768px;
+  --breakpoint-desktop: 1024px;
+  --breakpoint-wide: 1440px;
+
+  /* --- Motion (DESIGN.md §9) ------------------------------------------- */
+  /* Nothing animates longer than 600ms. */
+  --duration-tumble: 400ms;
+  --duration-unfold: 200ms;
+  --duration-crossfade: 150ms;
+
+  /* --- Layout (DESIGN.md §5) ------------------------------------------- */
+  /* 1200px, from the forsure.co autopsy §2. Narrower than the 1440 PULP
+     started with: it is what makes a 2-up product grid read as a
+     catalogue rather than a showroom. */
+  --container-content: 1200px;
+  /* The basket slide-over's width above 768. A panel width is a layout
+     dimension, not a gap, so it sits off the spacing ramp alongside the
+     content box rather than being written as an arbitrary value at the
+     point of use. */
+  --container-panel: 480px;
+
+  /* --- Overlay motion (DESIGN.md §9) ----------------------------------- */
+  /* §9 has no entry for a slide-over, so both overlays reuse the accordion's
+     200ms rather than introducing an eighth duration. These are animations
+     rather than transitions because Radix waits on `animationend` before it
+     unmounts, which is what gives the panel an exit as well as an entrance.
+     The global reduced-motion rule collapses them to 0.01ms, so the panel
+     appears in place and the dialog still closes. */
+  --animate-overlay-in: overlay-in var(--duration-unfold) ease-out;
+  --animate-overlay-out: overlay-out var(--duration-unfold) ease-in;
+  --animate-panel-in: panel-in var(--duration-unfold) ease-out;
+  --animate-panel-out: panel-out var(--duration-unfold) ease-in;
+
+  /* Add to basket (DESIGN.md §9): the item tumbles into the basket icon, 400ms.
+     The distance is not knowable in CSS — it depends where the button and the
+     header icon happen to be — so the component measures both and hands the
+     delta over as --tumble-x / --tumble-y. Under reduced motion the ghost is
+     never rendered at all, and a static confirmation takes its place, which is
+     what §9 asks for instead of a bare removal. */
+  --animate-tumble: tumble var(--duration-tumble) cubic-bezier(0.4, 0, 0.7, 1)
+    forwards;
+
+  /* The 404's drum: one rotation on arrival, then still (DESIGN.md §9).
+     Deliberately not the loading drum's infinite spin — §9 allows exactly one
+     forever-loop on the site and this is not it. A single turn answers landing
+     on the page, finishes inside the 600ms ceiling, and leaves the glyph at
+     rest. The global reduced-motion rule collapses it, which lands on the same
+     static drum rather than removing anything. */
+  --animate-tumble-once: tumble-once var(--duration-tumble) ease-out;
+
+  /* Accordion open: content unfolds downward, 200ms (DESIGN.md §9). The height
+     is the one Radix measures onto the element for us. */
+  --animate-unfold-down: unfold-down var(--duration-unfold) ease-out;
+  --animate-unfold-up: unfold-up var(--duration-unfold) ease-in;
+  /* The running press (DESIGN.md §9, "the header"). Two ambient loops - the
+     stated exception to "nothing loops". Slow on purpose: a print head
+     crossing a 1500px header in 6s moves about the speed of a real one, and
+     a mark turning once every 12s is felt rather than watched. */
+  --animate-press-head: press-head 6s ease-in-out infinite alternate;
+  --animate-register: register 12s linear infinite;
+}
+
+@keyframes tumble-once {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes press-head {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    /* The track is a container, so 100cqw is its own width: the head runs
+       exactly to the far end and no further, at any viewport. */
+    transform: translateX(calc(100cqw - 100%));
+  }
+}
+
+@keyframes register {
+  to {
+    transform: rotate(1turn);
+  }
+}
+
+@keyframes unfold-down {
+  from {
+    height: 0;
+  }
+  to {
+    height: var(--radix-accordion-content-height);
+  }
+}
+
+@keyframes unfold-up {
+  from {
+    height: var(--radix-accordion-content-height);
+  }
+  to {
+    height: 0;
+  }
+}
+
+@keyframes tumble {
+  from {
+    transform: translate3d(0, 0, 0) rotate(0deg) scale(1);
+    opacity: 1;
+  }
+  to {
+    transform: translate3d(var(--tumble-x), var(--tumble-y), 0) rotate(540deg)
+      scale(0.15);
+    opacity: 0;
+  }
+}
+
+@keyframes overlay-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes overlay-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes panel-in {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes panel-out {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(100%);
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Type roles (DESIGN.md §3)
+
+   Seven roles. The scale switches at 1024 and nowhere else.
+   Tracking of -0.02em applies at 48px and above only, which is why `lg`
+   carries it at desktop and drops it at mobile, where it sets at 32px.
+   Line heights are not specified in DESIGN.md; they are set here once, tight
+   on the display faces and open on body copy, so the roles stay self-contained.
+   --------------------------------------------------------------------------- */
+
+/* `display` is the one role that does not switch at 1024 (DESIGN.md §3).
+   Seven characters of the display face at 200px measure around 1050px, so 1024 is too
+   narrow to hold the longest word the role permits, at any gutter. 1174 is the
+   narrowest viewport where 200px clears the 64px gutters on both sides. Two
+   fixed sizes as before — only the threshold moves. */
+@utility type-display {
+  font-family: var(--font-display);
+  font-size: 64px;
+  line-height: 0.9;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+  @media (width >= 1174px) {
+    font-size: 200px;
+    line-height: 0.85;
+  }
+}
+
+@utility type-xl {
+  font-family: var(--font-display);
+  font-size: 48px;
+  line-height: 0.95;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+  @media (width >= 1024px) {
+    font-size: 96px;
+    line-height: 0.9;
+  }
+}
+
+@utility type-lg {
+  font-family: var(--font-display);
+  font-size: 32px;
+  line-height: 1.05;
+  letter-spacing: 0;
+  text-transform: uppercase;
+  @media (width >= 1024px) {
+    font-size: 48px;
+    line-height: 1;
+    letter-spacing: -0.02em;
+  }
+}
+
+@utility type-md {
+  font-family: var(--font-body);
+  font-size: 20px;
+  line-height: 1.4;
+  letter-spacing: 0;
+  @media (width >= 1024px) {
+    font-size: 24px;
+  }
+}
+
+@utility type-base {
+  font-family: var(--font-body);
+  font-size: 16px;
+  /* 1.8 and positive tracking, from the forsure autopsy §3. The reference
+     tracks every small size OUT (+0.6 to +1.5px) and never negative, which is
+     what keeps 13px body readable. PULP's display roles keep their negative
+     tracking; the two rules meet at 48px. */
+  line-height: 1.8;
+  letter-spacing: 0.03em;
+}
+
+@utility type-button {
+  font-family: var(--font-display);
+  font-size: 16px;
+  line-height: 1;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+@utility type-label {
+  font-family: var(--font-label);
+  font-size: 13px;
+  line-height: 1.8;
+  /* The reference's dominant UI label is 12px/700 uppercase at +1.5px
+     (autopsy §3). Space Mono is already wide, so this lands softer at 0.08em. */
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* Line length capped at 70 characters (DESIGN.md §3). */
+@utility measure {
+  max-width: 70ch;
+}
+
+/* A full-viewport hero, less the sticky header that sits above it. Without the
+   subtraction the last line of the hero falls exactly one header below the fold
+   — the one place on the site where "full viewport" is not 100dvh.
+
+   The header is 80px plus its 2px rule, and the rule has to come off too or the
+   page opens with a two-pixel scroll. Border widths sit off the spacing ramp by
+   §5, which is why this one is written as a literal. */
+@utility viewport-hero {
+  min-height: calc(100dvh - var(--spacing-80) - 2px);
+}
+
+/* The page-graphic scale for care symbols (DESIGN.md §7 — 16px UI, 64px section
+   markers, 400px+ page graphics). Capped at the width of its column so the
+   graphic scale does not put a horizontal scrollbar on a 360px screen. */
+@utility symbol-graphic {
+  width: min(400px, 100%);
+  height: auto;
+  aspect-ratio: 1;
+}
+
+/* ---------------------------------------------------------------------------
+   Content box (DESIGN.md §5)
+
+   1440px box whose edges are the outer column edges — no outer margin, so the
+   grid runs to the box edge rather than sitting inside padding. The gutter
+   value only comes into play below 1440, where it keeps content off the
+   viewport edge.
+
+   Note the arithmetic this produces: 12 columns and 11 gutters of 64 inside
+   1440 leaves 61.3px per column, so columns are narrower than the gutters
+   between them. That is what the spec defines, not a layout error.
+   --------------------------------------------------------------------------- */
+
+@utility shell {
+  /* Gutters 30px mobile / 50px desktop (forsure autopsy §2). These are exact
+     measured values, not ramp steps — the reference does not run an 8px ramp
+     and forcing these to 24/64 loses the density the whole port is for. */
+  width: min(100% - 60px, var(--container-content));
+  margin-inline: auto;
+  @media (width >= 1024px) {
+    width: min(100% - 100px, var(--container-content));
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   The press table (DESIGN.md §2)
+   ---------------------------------------------------------------------------
+   Every ground on this site is a halftone field rather than a flat fill. A
+   halftone is what a single ink actually looks like when it is printed at less
+   than full strength, so this is the one pattern the brand can carry without
+   inventing a decorative language that has nothing to do with printing.
+
+   Loud, but not shouting: the dots are laid at low strength, so a section
+   reads as a colour from across a room and as texture up close, and body text
+   over it keeps its full contrast against the paper rather than the ink.
+
+   `--field-ink` is the one knob. A section sets it and picks a density; the
+   dot geometry never changes, which is what keeps eight surfaces looking like
+   one press run.
+   --------------------------------------------------------------------------- */
+
+@utility grid-paper {
+  /* Graph-paper ruling. Major lines every 96px, fine lines every 16px, both
+     drawn from `--grid-ink` so a section can re-rule itself in its own ink
+     without redefining the geometry. */
+  background-image:
+    linear-gradient(
+      to right,
+      color-mix(in srgb, var(--grid-ink, var(--color-ultra)) var(--grid-major, 14%), transparent) 0 1.5px,
+      transparent 1.5px
+    ),
+    linear-gradient(
+      to bottom,
+      color-mix(in srgb, var(--grid-ink, var(--color-ultra)) var(--grid-major, 14%), transparent) 0 1.5px,
+      transparent 1.5px
+    ),
+    linear-gradient(
+      to right,
+      color-mix(in srgb, var(--grid-ink, var(--color-ultra)) var(--grid-minor, 6%), transparent) 0 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      to bottom,
+      color-mix(in srgb, var(--grid-ink, var(--color-ultra)) var(--grid-minor, 6%), transparent) 0 1px,
+      transparent 1px
+    );
+  background-size: 96px 96px, 96px 96px, 16px 16px, 16px 16px;
+}
+
+@utility plotted-sheet {
+  /* The ground: drawn marks over graph-paper ruling.
+
+     One element, one background stack, five layers — the plot tile on top of
+     the four ruling gradients. Stacking it this way rather than as a pseudo
+     element or an extra div keeps it out of the DOM and out of any z-index
+     conversation with sticky headers and dialogs.
+
+     The tile is a 720px repeat: a plotted polyline whose ends meet at the same
+     height on both edges, so the path runs unbroken across repeats, plus a few
+     closed shapes and registration crosses inset far enough never to clip at a
+     seam. That is where the rhythm comes from — the path is continuous, the
+     shapes recur on a slower beat than the ruling. */
+  background-image:
+    url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22720%22%20height%3D%22720%22%20viewBox%3D%220%200%20720%20720%22%3E%20%3Cg%20fill%3D%22none%22%20stroke%3D%22%231b4dff%22%20stroke-opacity%3D%220.30%22%20stroke-width%3D%221.5%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%20%3Cpolyline%20points%3D%220%2C118%2096%2C64%20188%2C142%20262%2C96%20370%2C178%20448%2C120%20556%2C166%20640%2C88%20720%2C118%22%2F%3E%20%3C%2Fg%3E%20%3Cg%20fill%3D%22%231b4dff%22%20fill-opacity%3D%220.36%22%3E%20%3Ccircle%20cx%3D%2296%22%20cy%3D%2264%22%20r%3D%223.5%22%2F%3E%20%3Ccircle%20cx%3D%22188%22%20cy%3D%22142%22%20r%3D%223.5%22%2F%3E%20%3Ccircle%20cx%3D%22370%22%20cy%3D%22178%22%20r%3D%223.5%22%2F%3E%20%3Ccircle%20cx%3D%22556%22%20cy%3D%22166%22%20r%3D%223.5%22%2F%3E%20%3Ccircle%20cx%3D%22640%22%20cy%3D%2288%22%20r%3D%223.5%22%2F%3E%20%3C%2Fg%3E%20%3Cg%20fill%3D%22none%22%20stroke%3D%22%231b4dff%22%20stroke-opacity%3D%220.24%22%20stroke-width%3D%221.5%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%20%3Cpolyline%20points%3D%220%2C552%20128%2C590%20226%2C506%20344%2C574%20470%2C498%20598%2C562%20720%2C520%22%2F%3E%20%3C%2Fg%3E%20%3Cg%20fill%3D%22%231b4dff%22%20fill-opacity%3D%220.30%22%3E%20%3Ccircle%20cx%3D%22226%22%20cy%3D%22506%22%20r%3D%223%22%2F%3E%20%3Ccircle%20cx%3D%22470%22%20cy%3D%22498%22%20r%3D%223%22%2F%3E%20%3Ccircle%20cx%3D%22598%22%20cy%3D%22562%22%20r%3D%223%22%2F%3E%20%3C%2Fg%3E%20%3Cg%20fill%3D%22none%22%20stroke%3D%22%23b8566a%22%20stroke-opacity%3D%220.26%22%20stroke-width%3D%221.5%22%3E%20%3Ccircle%20cx%3D%22598%22%20cy%3D%22318%22%20r%3D%2244%22%2F%3E%20%3Ccircle%20cx%3D%22150%22%20cy%3D%22392%22%20r%3D%2222%22%2F%3E%20%3C%2Fg%3E%20%3Ccircle%20cx%3D%22598%22%20cy%3D%22318%22%20r%3D%224.5%22%20fill%3D%22%23b8566a%22%20fill-opacity%3D%220.30%22%2F%3E%20%3Cg%20fill%3D%22none%22%20stroke%3D%22%23111111%22%20stroke-opacity%3D%220.16%22%20stroke-width%3D%221.5%22%20stroke-linejoin%3D%22round%22%3E%20%3Cpath%20d%3D%22M300%20336%20L344%20262%20L388%20336%20Z%22%2F%3E%20%3Crect%20x%3D%22452%22%20y%3D%22612%22%20width%3D%2258%22%20height%3D%2258%22%2F%3E%20%3Crect%20x%3D%2262%22%20y%3D%22216%22%20width%3D%2234%22%20height%3D%2234%22%2F%3E%20%3C%2Fg%3E%20%3Cg%20fill%3D%22none%22%20stroke%3D%22%231b4dff%22%20stroke-opacity%3D%220.20%22%20stroke-width%3D%221.5%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%20%3Cpolyline%20points%3D%22150%20392%20300%20336%20452%20612%22%2F%3E%20%3C%2Fg%3E%20%3Cg%20stroke%3D%22%23111111%22%20stroke-opacity%3D%220.18%22%20stroke-width%3D%221.5%22%20stroke-linecap%3D%22round%22%3E%20%3Cpath%20d%3D%22M668%20660%20h24%20M680%20648%20v24%22%2F%3E%20%3Cpath%20d%3D%22M36%20682%20h24%20M48%20670%20v24%22%2F%3E%20%3Cpath%20d%3D%22M392%20432%20h24%20M404%20420%20v24%22%2F%3E%20%3C%2Fg%3E%20%3C%2Fsvg%3E"),
+    linear-gradient(
+      to right,
+      color-mix(in srgb, var(--grid-ink, var(--color-ultra)) var(--grid-major, 14%), transparent) 0 1.5px,
+      transparent 1.5px
+    ),
+    linear-gradient(
+      to bottom,
+      color-mix(in srgb, var(--grid-ink, var(--color-ultra)) var(--grid-major, 14%), transparent) 0 1.5px,
+      transparent 1.5px
+    ),
+    linear-gradient(
+      to right,
+      color-mix(in srgb, var(--grid-ink, var(--color-ultra)) var(--grid-minor, 6%), transparent) 0 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      to bottom,
+      color-mix(in srgb, var(--grid-ink, var(--color-ultra)) var(--grid-minor, 6%), transparent) 0 1px,
+      transparent 1px
+    );
+  background-size: 720px 720px, 96px 96px, 96px 96px, 16px 16px, 16px 16px;
+}
+
+/* Section washes. A tint laid over the ruling, plus the ink the ruling is
+   drawn in, so a loud block still reads as the same sheet of paper rather than
+   as a coloured panel dropped on top of it. Kept weak on purpose: the point is
+   a shift in the ground, not a second background. */
+@utility wash-rose {
+  --grid-ink: var(--color-rose);
+  --grid-major: 18%;
+  --grid-minor: 7%;
+  background-color: color-mix(in srgb, var(--color-rose) 5%, var(--color-paper));
+}
+
+@utility wash-ultra {
+  --grid-ink: var(--color-ultra);
+  --grid-major: 15%;
+  --grid-minor: 6%;
+  background-color: color-mix(in srgb, var(--color-ultra) 4%, var(--color-paper));
+}
+
+@utility wash-volt {
+  --grid-ink: var(--color-ink);
+  --grid-major: 12%;
+  --grid-minor: 5%;
+  background-color: color-mix(in srgb, var(--color-volt) 12%, var(--color-paper));
+}
+
+/* The hero film's composition (DESIGN.md §9, "the hero film").
+
+   The film puts its garments in the centre of a 16:9 frame. The type sits in
+   the left column, so the two collide — ink on a black hoodie is ~1.2:1.
+   `object-fit: cover` cannot move things along an axis it is not cropping,
+   and above `desktop` the hero is wider than 16:9, so the cropped axis is
+   vertical and `object-position` does nothing horizontally.
+
+   From `desktop`, the film is scaled to 140% of the section and anchored to
+   its left edge. That slides the garment zone from 35–65% of the viewport to
+   49–91%, clear of a wordmark that ends at 43%, at the cost of the film's
+   right margin, which is empty paper. Below `desktop` the hero is taller than
+   16:9, the cropped axis is horizontal, and anchoring the crop right shows
+   the film's right 40% — the garments mostly leave frame and the type sits on
+   the calm sheet. */
+/* The wordmark (DESIGN.md §5): the name skewed 14° forward. Speed without a
+   single added shape. Anchored at the baseline's left end so the mark leans
+   from where it stands rather than pivoting about its centre — at 200px a
+   centred skew pushes the bottom of the P about 25px past the left gutter. */
+@utility wordmark {
+  display: inline-block;
+  text-transform: uppercase;
+  transform: skewX(-14deg);
+  transform-origin: 0 100%;
+}
+
+/* Header motion (DESIGN.md §9, "the header"). Both take their clock from
+   the unfold token so the header, the accordion and the overlays all move at
+   one speed. */
+@utility press-roll {
+  transition: transform var(--duration-unfold) ease-out;
+}
+
+/* The wordmark leans harder under the pointer: 14 degrees at rest, 20 when
+   pushed. Applied through group-hover on the home link, so it fires only in
+   the header and never on the hero, the footer or the slip. */
+@utility wordmark-push {
+  transform: skewX(-20deg);
+}
+
+@utility film-shift {
+  /* Owns the box outright. Pairing this with `size-full` put two `width`
+     declarations on one element and left the winner to stylesheet order —
+     the 100% won and the shift silently did nothing. */
+  height: 100%;
+  width: 100%;
+  /* Preflight sets `img, video { max-width: 100% }`, which silently clamps
+     the 140% below back to the section width. Both `.film-shift` rules were
+     compiled and matched; this one declaration was the whole difference. */
+  max-width: none;
+  object-position: 100% 50%;
+  @media (width >= 1024px) {
+    width: 140%;
+    object-position: 0% 50%;
+  }
+}
+
+
+
+
+
+@layer base {
+  /* Square corners are a system rule, not a default to be overridden. */
+  *,
+  *::before,
+  *::after {
+    border-radius: 0;
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    /* The ground is paper, not page — see the `--color-paper` note above. */
+    background-color: var(--color-paper);
+    color: var(--color-ink);
+    font-family: var(--font-body);
+    font-size: 16px;
+    /* 1.8, matching `type-base` and the forsure autopsy §3. Set in both places
+       because anything inheriting from body rather than taking the utility
+       would otherwise sit at a different rhythm to everything around it. */
+    line-height: 1.8;
+  }
+
+  /* Focus is always visible (DESIGN.md §4). */
+  :focus-visible {
+    outline: 2px solid var(--color-ultra);
+    outline-offset: 2px;
+  }
+
+  /* Forms inherit the system rather than the user agent. */
+  button,
+  input,
+  select,
+  textarea {
+    font: inherit;
+    color: inherit;
+  }
+
+  ::selection {
+    background-color: var(--color-rose);
+    color: var(--color-page);
+  }
+}
+
+/* Reduced motion gets a static equivalent, never a bare removal
+   (DESIGN.md §9). Component-level static states live with their components. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
