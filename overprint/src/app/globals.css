@@ -1,0 +1,343 @@
+@import "tailwindcss";
+
+/* Tokens — every value is documented in design-system.md with its source. */
+@theme {
+  /* §3 type families — loaded by next/font in layout.tsx */
+  --font-display: var(--font-tangerine), "Snell Roundhand", "Apple Chancery", cursive;
+  --font-body: var(--font-jost), "Futura", "Century Gothic", ui-sans-serif, sans-serif;
+
+  /* §3 type scale */
+  --text-micro: 0.75rem;
+  --text-micro--line-height: 1.2;
+  --text-micro--letter-spacing: 0.02em;
+  --text-body: 1rem;
+  --text-body--line-height: 1.5;
+  --text-body--letter-spacing: 0;
+  --text-lede: clamp(1.0625rem, 0.95rem + 0.45vw, 1.375rem);
+  --text-lede--line-height: 1.4;
+  --text-lede--letter-spacing: 0;
+  /* display sizes are 1.6× the Archivo originals: Tangerine's x-height is 0.26em
+     against Archivo's 0.53em (measured), so it needs ~1.6× to read the same */
+  --text-title: clamp(2rem, 1.5rem + 1.8vw, 3.25rem);
+  --text-title--line-height: 0.95;
+  --text-title--letter-spacing: 0;
+  --text-head: clamp(3.5rem, 1.6rem + 7.4vw, 8.75rem);
+  --text-head--line-height: 0.9;
+  --text-head--letter-spacing: 0;
+  --text-display: clamp(4rem, 23vw, 64rem);
+  --text-display--line-height: 0.9;
+  --text-display--letter-spacing: 0;
+
+  /* §4 colour roles */
+  --color-paper: #f4f1ea;
+  --color-ink: #161412;
+  --color-ink-muted: #595653;
+  --color-rule: #85837e;
+  --color-cyan: #00a3e0;
+  --color-magenta: #e4007c;
+  --color-yellow: #ffe500;
+  --color-magenta-deep: #b3005f;
+
+  /* §1–2 layout + spacing */
+  --spacing-edge: 0.625rem;
+  --spacing-gutter: 0.375rem;
+  --spacing-target: 2.75rem;
+  --spacing-stack: 6rem;
+  --spacing-stack-sm: 3rem;
+  --spacing-section: 11rem;
+  --spacing-section-sm: 5.5rem;
+  --spacing-panel: 125svh;
+  --spacing-pin: 320svh;
+  --spacing-card: 80vw;
+  --spacing-card-md: 36vw;
+
+  /* §1 breakpoints — the reference's design tiers */
+  --breakpoint-md: 60rem;
+  --breakpoint-lg: 75rem;
+  --breakpoint-xl: 90rem;
+
+  /* §6 motion */
+  --ease-press: cubic-bezier(0.42, 0, 0.58, 1);
+  --ease-reveal: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+/* §6 registration amount: 1 = fully misregistered, 0 = at resting offset.
+   Registered so keyframes can interpolate it. */
+@property --reg {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 0;
+}
+
+:root {
+  --plate-shift: 0.035em; /* §6 resting misregistration */
+  --focus-ring: var(--color-ink);
+}
+
+/* §1 the 8-col / 6px / 10px grid — 4 cols below md */
+@utility grid-page {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  column-gap: var(--spacing-gutter);
+  padding-inline: var(--spacing-edge);
+  @media (width >= theme(--breakpoint-md)) {
+    grid-template-columns: repeat(8, minmax(0, 1fr));
+  }
+}
+
+@layer base {
+  html {
+    background: var(--color-paper);
+    color: var(--color-ink);
+    -webkit-text-size-adjust: 100%;
+  }
+  body {
+    font-family: var(--font-body);
+    font-size: var(--text-body);
+    line-height: var(--text-body--line-height);
+    letter-spacing: var(--text-body--letter-spacing);
+    font-variant-ligatures: none;
+    overflow-x: clip;
+  }
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-variant-ligatures: common-ligatures contextual;
+    text-wrap: balance;
+  }
+  :focus-visible {
+    outline: 3px solid var(--focus-ring);
+    outline-offset: 3px;
+  }
+  ::selection {
+    background: var(--color-yellow);
+    color: var(--color-ink);
+  }
+}
+
+@layer components {
+  /* §5 paper grain — the reference's 15% noise, adapted to a light stock */
+  .paper-grain::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    pointer-events: none;
+    opacity: 0.06;
+    mix-blend-mode: multiply;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  /* §4 PlateText — every plate sits in one grid cell; colours multiply
+     inside an isolated stack so they never blend with the page. */
+  .plate-stack {
+    display: inline-grid;
+    isolation: isolate;
+  }
+  .plate-stack > * {
+    grid-area: 1 / 1;
+  }
+  .plate {
+    mix-blend-mode: multiply;
+  }
+  .plate-c {
+    color: var(--color-cyan);
+    translate: calc(var(--plate-shift) * (-1 - var(--reg) * 5))
+      calc(var(--plate-shift) * (0.6 + var(--reg) * 3));
+  }
+  .plate-m {
+    color: var(--color-magenta);
+    translate: calc(var(--plate-shift) * (1 + var(--reg) * 6))
+      calc(var(--plate-shift) * (0.3 + var(--reg) * 2));
+  }
+  .plate-y {
+    color: var(--color-yellow);
+    translate: calc(var(--plate-shift) * (0.4 + var(--reg) * 3))
+      calc(var(--plate-shift) * (-1 - var(--reg) * 5));
+  }
+  .plate-k {
+    color: var(--color-ink);
+  }
+
+  /* ink shapes — CSS-only artwork, multiplied like the type plates */
+  .ink {
+    mix-blend-mode: multiply;
+  }
+
+  /* dark ink panels flip the focus ring */
+  .on-ink {
+    --focus-ring: var(--color-paper);
+  }
+}
+
+/* §6 registration — only when the viewer allows motion */
+@keyframes register {
+  from {
+    --reg: 1;
+  }
+  to {
+    --reg: 0;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .register-load {
+    animation: register 900ms var(--ease-reveal) both;
+  }
+  @supports (animation-timeline: view()) {
+    .register-scroll {
+      animation: register linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 100%;
+    }
+  }
+}
+
+/* §8 inline ink chip — sits in a headline's text flow (ref §3 inline chips) */
+@layer components {
+  .ink-chip {
+    display: inline-grid;
+    isolation: isolate;
+    width: 0.8em;
+    height: 0.8em;
+    margin-inline: 0.08em 0.36em;
+    vertical-align: -0.02em;
+  }
+  .ink-chip > * {
+    grid-area: 1 / 1;
+    border-radius: 9999px;
+    mix-blend-mode: multiply;
+  }
+  .ink-chip > :last-child {
+    translate: 0.28em 0;
+  }
+}
+
+
+/* §6 image zone — the pinned hero image zooms 1 → 1.12 across the first three
+   viewports of scroll; scale only, so no edge is ever exposed. */
+@keyframes backdrop-zoom {
+  to {
+    scale: 1.12;
+  }
+}
+
+/* §6 panel fade — copy over the pinned image rises in and lifts out, so the
+   text visibly changes while the picture holds still. */
+@keyframes panel-in-out {
+  entry 0% {
+    opacity: 0;
+    translate: 0 3rem;
+  }
+  entry 70% {
+    opacity: 1;
+    translate: 0 0;
+  }
+  exit 50% {
+    opacity: 1;
+    translate: 0 0;
+  }
+  exit 100% {
+    opacity: 0;
+    translate: 0 -3rem;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: scroll()) {
+    .backdrop-zoom {
+      animation: backdrop-zoom linear both;
+      animation-timeline: scroll(root);
+      animation-range: 0 300vh;
+    }
+    .panel-fade {
+      animation: panel-in-out linear both;
+      animation-timeline: view();
+    }
+  }
+}
+
+/* §4 ink chips on the photo — multiply would sink them into the dark image */
+@layer components {
+  .on-image .ink-chip > * {
+    mix-blend-mode: normal;
+  }
+}
+
+/* §8 wide separation — the Process "Separate" card pulls its plates further apart */
+@layer components {
+  .plate-shift-wide {
+    --plate-shift: 0.08em;
+  }
+}
+
+/* §6 pinned horizontal gallery (Process) — the section is --spacing-pin tall, its
+   inner box sticks for the whole run, and the track slides left by exactly its
+   overflow (−100% of itself + the sticky box's width). Without motion permission
+   or scroll-timeline support nothing below applies and the track stays a native
+   keyboard-scrollable snap strip. */
+@keyframes pin-slide {
+  to {
+    translate: calc(-100% + 100cqw) 0;
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    .pin-section {
+      height: var(--spacing-pin);
+      view-timeline-name: --pin;
+    }
+    .pin-sticky {
+      position: sticky;
+      top: 0;
+      display: flex;
+      height: 100svh;
+      align-items: center;
+      overflow: hidden;
+      container-type: inline-size;
+    }
+    .pin-scroller {
+      width: 100%;
+      overflow: visible;
+    }
+    .pin-track {
+      animation: pin-slide linear both;
+      animation-timeline: --pin;
+      animation-range: contain 0% contain 100%;
+    }
+  }
+}
+
+/* §3 footer wordmark — sized from its container so "Overprint" fills the
+   edge-to-edge width exactly. --wordmark-em = the word's advance in Tangerine 700
+   (2.582em, measured) + the plate offset (0.035em). */
+:root {
+  --wordmark-em: 2.62;
+}
+@layer components {
+  .wordmark-fit {
+    font-size: calc(100cqi / var(--wordmark-em));
+    line-height: 1.05; /* room for Tangerine's 0.25em descender on the "p" */
+    letter-spacing: 0;
+  }
+
+  /* §4 plates on ink — multiply vanishes on a dark substrate, so plates add
+     light instead (screen) and the K plate prints in paper. */
+  .on-ink .plate {
+    mix-blend-mode: screen;
+  }
+  .on-ink .plate-k {
+    color: var(--color-paper);
+  }
+}
+
+/* §8 form controls on ink — native option lists render on the OS surface, so
+   give them explicit paper-on-ink colours rather than inheriting paper text */
+@layer components {
+  .on-ink select option {
+    background: var(--color-ink);
+    color: var(--color-paper);
+  }
+}
