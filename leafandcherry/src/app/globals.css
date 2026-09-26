@@ -1,0 +1,826 @@
+/* ============================================================================
+   Leaf & Cherry — design tokens
+   Tailwind CSS v4 `@theme`. Documented in ../../design-system.md
+   Derived from refs/cafe-technica/autopsy.md (single reference; see the
+   Decisions log in design-system.md for what was deliberately diverged).
+
+   Requires Tailwind v4 (`@import "tailwindcss"`). On v3 this block is inert.
+   ========================================================================= */
+
+@import "tailwindcss";
+
+@theme {
+  /* --------------------------------------------------------------------
+     FAMILIES — all three on Google Fonts, verified against the CSS2 API.
+     display: the declared divergence from the reference's mono display.
+     sans:    Manrope, measured as the nearest available match to the
+              reference's Switzer (x/cap 0.750 vs 0.779, line width +1.2%).
+     mono:    demoted to a data role — lot codes, altitudes, dates, figures.
+     -------------------------------------------------------------------- */
+  /* The *-loaded vars are injected on <html> by next/font (src/app/layout.tsx)
+     and already carry their own metric-matched fallback face. The tail of each
+     stack is the documented fallback if next/font is ever removed. */
+  --font-display: var(--font-display-loaded), "Newsreader", Georgia, serif;
+  --font-sans: var(--font-sans-loaded), "Inter", system-ui, -apple-system, sans-serif;
+  --font-mono: var(--font-mono-loaded), ui-monospace, "SFMono-Regular", monospace;
+
+  /* Fraunces variable axes. opsz is driven by font-optical-sizing: auto,
+     so it tracks the rendered size rather than being pinned.
+     SOFT/WONK are fine-grain: barely visible at 40px, clearly present at
+     56-72px. Set once here; do not vary per component. */
+  --display-axes: "SOFT" 30, "WONK" 1;
+  --display-axes-plain: "SOFT" 30, "WONK" 0;   /* nav, buttons, small headings */
+
+  /* --------------------------------------------------------------------
+     TYPE SCALE
+     1.2 through UI/body, one 1.4 jump into display.
+     Reproduces the reference's measured pattern without inheriting its
+     three near-duplicate display sizes (35 / 39.7 / 41.6).
+     HERO ÷ BODY = 40 / 16 = 2.5x — matches the reference's 2.51x.
+     -------------------------------------------------------------------- */
+  --text-2xs: 0.75rem;          /* 12 — mono labels, lot codes, axis labels */
+  --text-2xs--line-height: 1.4;
+  --text-2xs--letter-spacing: 0.08em;
+  --text-2xs--font-weight: 500;
+
+  --text-xs: 0.875rem;          /* 14 — footer, legal, helper */
+  --text-xs--line-height: 1.6;
+
+  --text-sm: 1rem;              /* 16 — BODY DEFAULT */
+  --text-sm--line-height: 1.6;
+
+  --text-base: 1.1875rem;       /* 19 — lead paragraph, hero support */
+  --text-base--line-height: 1.6;
+
+  --text-lg: 1.4375rem;         /* 23 — card title (display) */
+  --text-lg--line-height: 1.3;
+
+  --text-xl: 1.75rem;           /* 28 — sequence-item title (display) */
+  --text-xl--line-height: 1.3;
+  --text-xl--letter-spacing: -0.01em;
+
+  --text-2xl: 2.5rem;           /* 40 — h1 + section headings (display) */
+  --text-2xl--line-height: 1.2;
+  --text-2xl--letter-spacing: -0.015em;
+
+  --text-3xl: 3.5rem;           /* 56 — statement / pull-quote */
+  --text-3xl--line-height: 1.15;
+  --text-3xl--letter-spacing: -0.02em;
+
+  --text-4xl: 4.5rem;           /* 72 — reserved; not used on the homepage */
+  --text-4xl--line-height: 1.1;
+  --text-4xl--letter-spacing: -0.025em;
+
+  /* Fluid h1: ONE rule for the 40 -> 28 collapse. The reference scaled
+     per-element and landed two identical desktop sizes at 20px and 35px. */
+  --text-hero: clamp(1.75rem, 1.2rem + 2.2vw, 2.5rem);
+  --text-hero--line-height: 1.2;
+  --text-hero--letter-spacing: -0.015em;
+  --text-statement: clamp(2rem, 1.2rem + 3.4vw, 3.5rem);
+  --text-statement--line-height: 1.15;
+  --text-statement--letter-spacing: -0.02em;
+
+  /* --------------------------------------------------------------------
+     COLOUR
+     Three hues, as in the reference: one warm ink, one accent on the ink's
+     own hue at far higher chroma, one badge fill. Forest and roast are
+     surfaces, not a theme — there is no dark mode.
+     Every contrast figure below is computed, not estimated.
+     -------------------------------------------------------------------- */
+  --color-surface: #FBF7F0;             /* linen */
+  --color-surface-raised: #F3EDE3;
+  --color-surface-forest: #1E3026;
+  --color-surface-roast: #241610;
+
+  --color-text: #1B120C;                /* 17.27:1 on surface */
+  --color-text-muted: #6B5547;          /* 6.39:1 on surface, 5.86:1 on raised */
+  --color-text-on-dark: #F0E6D6;        /* 11.28:1 forest, 14.19:1 roast */
+  --color-text-muted-dark: #BFAE97;     /* 6.45:1 forest, 8.12:1 roast */
+
+  --color-hairline: #DED2C2;            /* 1.39:1 — DECORATIVE ONLY, never text */
+  --color-rule: #A8341F;                /* 6.19:1 on surface — meaningful rules */
+
+  --color-accent: #A8341F;              /* cherry — 6.19:1 on surface */
+  --color-accent-hover: #8C2717;        /* 8.69:1 vs white */
+  --color-accent-fg: #FFFFFF;           /* 6.61:1 on accent */
+
+  --color-amber: #E8C87A;               /* badge fill — ink on it 11.40:1 */
+  --color-amber-ink: #8A6A18;           /* amber as TEXT on surface */
+  --color-leaf: #4E7A4A;                /* 4.67:1 — >=16px text and data marks only */
+
+  /* HARD RULES (contrast facts, not preferences):
+     - --color-accent on --color-surface-forest is 2.11:1. Never cherry text
+       or cherry rules on forest. Use --color-amber (8.61:1) instead.
+     - --color-hairline never carries text or meaning.
+     - --color-leaf never below 16px and never as the only signal. */
+
+  /* --------------------------------------------------------------------
+     SPACING — 8px base, linear at the bottom, doubling at the top.
+     The reference has no spacing scale (23/30/51/53/90/101/186/258/309);
+     its proportions are ported onto this grid.
+     -------------------------------------------------------------------- */
+  --spacing: 0.25rem;                   /* Tailwind v4 spacing base = 4px */
+
+  --space-1: 0.25rem;                   /* 4 */
+  --space-2: 0.5rem;                    /* 8   badge internal */
+  --space-3: 0.75rem;                   /* 12  control internal vertical */
+  --space-4: 1rem;                      /* 16  stack gap in a text block */
+  --space-6: 1.5rem;                    /* 24  RULE -> CONTENT INSET (ref 23px)
+                                                heading -> trailing rule (ref 25px) */
+  --space-8: 2rem;                      /* 32  grid gap mobile, card internal */
+  --space-12: 3rem;                     /* 48  title -> media (ref 51px) */
+  --space-16: 4rem;                     /* 64  grid gap desktop, media -> body (ref 74px) */
+  --space-24: 6rem;                     /* 96  sub-section separation, eyebrow -> title */
+  --space-32: 8rem;                     /* 128 SECTION PADDING DESKTOP */
+  --space-48: 12rem;                    /* 192 hero vertical, statement air */
+
+  --section-pad: 8rem;                  /* 128 desktop */
+  --section-pad-mobile: 4rem;           /* 64  -> 2:1, the reference's collapse ratio */
+
+  /* --------------------------------------------------------------------
+     LAYOUT
+     Full-bleed with a viewport gutter — the reference has no container.
+     -------------------------------------------------------------------- */
+  --gutter: clamp(1.25rem, 3vw, 3rem);  /* 20 / 32 / 48 — fixes the ref's 13px mobile */
+  --container-max: 100rem;              /* 1600 — ultrawide safety cap only */
+  --measure: 62ch;                      /* prose (ref measured 54-58ch) */
+  --measure-card: 56ch;
+  --grid-gap: 4rem;                     /* 64 desktop */
+  --grid-gap-mobile: 2rem;              /* 32 */
+  --split-rail: 30%;                    /* the 30/70 split, ref 29/71 and 32/68 */
+  --split-media: 70%;
+  /* Scroll distance each item of the pinned sequence occupies. The reference
+     runs a 856px pitch against an 826px viewport — almost exactly one screen
+     per item — across SIX items, so the pin holds for ~6 viewports. With two
+     items a 1:1 pitch gives only one viewport of travel and the effect reads
+     as an accident. 1.6 screens per item restores the dwell. */
+  --sequence-pitch: 160svh;             /* ref: 856px against an 826px viewport */
+  /* Hero sequence (autopsy §15.3–15.4, design-system §6). Scroll positions
+     are fixed by the ScrollProgress ranges in hero.tsx: slide 0 -> 0.4
+     screens, collapse 1.2 -> 1.7. --hero-hold is how long the photo stays
+     pinned (to the end of the collapse); --hero-rail is the row's flow height
+     (one empty screen + one screen of copy), which is where the Statement
+     starts, just under the finished strip. */
+  --hero-rail: 200svh;
+  --hero-hold: 170svh;
+  --hero-strip: 8rem;                   /* 128 — nav (80) + the label band */
+  /* Flow height of the hero row without motion (and so without the pin). */
+  --hero-flow: 75svh;
+  --rule-cap-width: 28rem;              /* 448 — ref measured 452 */
+  --container-rule-cap: 28rem;          /* same value, in the --container-* */
+  --container-measure: 62ch;            /* namespace so `w-rule-cap` and       */
+  --container-measure-card: 56ch;       /* `max-w-measure` generate utilities  */
+
+  /* --------------------------------------------------------------------
+     SHAPE AND DEPTH
+     Radius 0 is total and deliberate, as in the reference.
+     -------------------------------------------------------------------- */
+  --radius-none: 0px;
+  --radius-full: 9999px;                /* status dots + delivery chip ONLY */
+  --border-width: 1px;
+  --rule-width: 2px;                    /* the structural accent rule (ref: 2px authored) */
+  --rule-width-hover: 4px;
+
+  /* Dashboard layering only. NEVER on a marketing surface — the reference
+     has zero box-shadow anywhere and that is the look. */
+  --shadow-overlay: 0 8px 24px rgb(27 18 12 / 0.12), 0 2px 6px rgb(27 18 12 / 0.08);
+
+  /* Required under every text-over-image block. The reference has none, which
+     is its clearest accessibility failure.
+     Strengthened once real photography landed: the generated placeholder
+     plates were uniformly dark, so 0.72 was ample. Real photographs carry
+     blown highlights — sunlit concrete, sky — and cream text over those
+     measured only 4.60:1 at the old alphas.
+     Tight rather than tall: overlaid text occupies roughly the bottom 15% of
+     a panel, so the scrim is heavy there and fully gone above 55%. A gentler
+     gradient spread over the whole height hits the same ratio only by
+     darkening the entire photograph into a near-black rectangle. Values are
+     set from the worst composited pixel actually measured under the hero
+     text, not chosen by eye. */
+  --scrim-image: linear-gradient(
+    to top,
+    rgb(27 18 12 / 0.92) 0%,
+    rgb(27 18 12 / 0.78) 25%,
+    transparent 55%
+  );
+
+  /* --------------------------------------------------------------------
+     MOTION — intensity `subtle`, taken from the reference.
+     Durations and the reveal curve are measured values.
+     -------------------------------------------------------------------- */
+  --duration-fast: 200ms;               /* scroll reveal (measured) */
+  --duration-base: 300ms;               /* hover / focus (measured) */
+  --duration-slow: 400ms;               /* large-surface colour (measured) */
+  /* The reference's reveal curve measured as cubic-bezier(0.12, 0, 0.39, 0).
+     Both y controls sit at 0, so the value holds at 0 for the whole duration
+     and snaps at the very end — a pop, not a fade. The x controls are kept so
+     the timing character matches; y2 is corrected to 1 so the fade is
+     actually perceptible. Divergence from a measured value, on purpose. */
+  --ease-standard: cubic-bezier(0.12, 0, 0.39, 1);
+  --ease-hover: cubic-bezier(0.4, 0, 0.2, 1);
+  /* The reference delays its reveal by a measured 200ms. Dropped: a delayed
+     opacity transition never completes in this project's Chrome (the
+     transition reports playState "running" indefinitely and opacity stays 0),
+     and even where it does complete, delay + a near-instant curve reads as
+     lag followed by a pop rather than as a fade. */
+  --reveal-delay: 0ms;
+
+  /* --------------------------------------------------------------------
+     COMPONENT PRIMITIVES
+     -------------------------------------------------------------------- */
+  --control-height-sm: 2.5rem;          /* 40 — dashboard rows (44px hit via padding) */
+  --control-height: 3rem;               /* 48 — default; clears the 44px minimum */
+  --control-height-lg: 3.5rem;          /* 56 — hero only */
+  --touch-min: 2.75rem;                 /* 44 — system-wide floor */
+  --nav-height: 5rem;                   /* 80 — ref 95px, rounded to the scale */
+
+  --aspect-card: 3 / 2;                 /* preserved at every width (ref let it drift) */
+  --aspect-wide: 16 / 9;
+  --aspect-portrait: 4 / 5;
+}
+
+/* ============================================================================
+   BASE
+   ========================================================================= */
+
+:root {
+  color-scheme: light;                  /* no dark mode, as in the reference */
+}
+
+body {
+  background-color: var(--color-surface);
+  color: var(--color-text);
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  line-height: 1.6;
+  font-variant-numeric: lining-nums;    /* prices/altitudes align with the mono */
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Display face carries headings at weight 400; hierarchy is size and colour,
+   never weight — the reference's rule, kept.
+   font-optical-sizing lets Fraunces tighten and raise contrast as the size
+   grows, which is what gives 56-72px its editorial feel for free. */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-optical-sizing: auto;
+  font-variation-settings: var(--display-axes);
+  text-wrap: balance;
+}
+
+/* WONK off below 28px — its alternate glyphs are charm at display size and
+   noise at label size. */
+h4, h5, h6,
+.u-display-plain {
+  font-variation-settings: var(--display-axes-plain);
+}
+
+
+/* Brand focus ring. Replaces the reference's `:focus { outline: none }`
+   plus platform-blue `:focus-visible`. */
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+/* Prose links get colour AND an underline. The reference used neither, which
+   made an in-copy phone number indistinguishable from the text around it. */
+.prose a,
+a[data-link="prose"] {
+  color: var(--color-accent);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.2em;
+  transition: text-decoration-thickness var(--duration-base) var(--ease-hover);
+}
+.prose a:hover,
+a[data-link="prose"]:hover {
+  text-decoration-thickness: 2px;
+}
+
+/* Tabular figures wherever a number can change under the reader. */
+.tabular,
+[data-numeric] {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Progressive enhancement: .u-reveal starts at opacity 0 and is revealed by an
+   IntersectionObserver. With no scripting there is no observer, so the content
+   would stay invisible forever. Show it unconditionally in that case. */
+@media (scripting: none) {
+  .u-reveal {
+    opacity: 1;
+  }
+  /* The loading screen is dismissed by script; without it, never show. */
+  .u-loader {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* Scroll reveals never hide their content when motion is reduced. This is
+     the whole reduced-motion path for Reveal — it is not done in JS. */
+  .u-reveal {
+    opacity: 1;
+  }
+  .u-loader {
+    display: none;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 1ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ============================================================================
+   UTILITIES
+   These carry the tokens that Tailwind's namespaces do not generate utilities
+   for (gutter, section padding, measure, scrim, rules). Using them is how we
+   keep the "no arbitrary values" rule without inlining px.
+   ========================================================================= */
+
+@utility u-gutter {
+  padding-inline: var(--gutter);
+}
+
+@utility u-section {
+  padding-block: var(--section-pad-mobile);
+  @media (width >= 64rem) {
+    padding-block: var(--section-pad);
+  }
+}
+
+@utility u-measure {
+  max-width: var(--measure);
+}
+
+@utility u-measure-card {
+  max-width: var(--measure-card);
+}
+
+/* Required under every text-over-image block. */
+@utility u-scrim {
+  position: absolute;
+  inset: 0;
+  background-image: var(--scrim-image);
+  pointer-events: none;
+}
+
+/* The structural rule, in its three jobs (design-system §5). */
+@utility u-rule-lead {
+  border-inline-start: var(--rule-width) solid var(--color-rule);
+  padding-inline-start: var(--space-6);
+  transition: border-inline-start-width var(--duration-base) var(--ease-hover);
+}
+
+@utility u-rule-cap {
+  border-block-start: var(--rule-width) solid var(--color-rule);
+}
+
+/* Nav height, so the fixed header can be offset consistently. */
+@utility u-nav-offset {
+  padding-block-start: var(--nav-height);
+}
+
+/* Scroll reveal: opacity only, exactly as measured on the reference. */
+@utility u-reveal {
+  opacity: 0;
+  /* --duration-slow, not --duration-fast: at 200ms the fade is over before the
+     eye registers it while scrolling. */
+  transition: opacity var(--duration-slow) var(--ease-standard);
+}
+
+@utility u-reveal-in {
+  opacity: 1;
+}
+
+/* Every interactive element clears the 44px floor the reference fails. */
+@utility u-touch {
+  min-block-size: var(--touch-min);
+  min-inline-size: var(--touch-min);
+}
+
+/* The 30/70 split, used by the hero and the sticky sequence (autopsy §2:
+   measured 29/71 and 32/68). Stacks below the lg breakpoint. */
+@utility u-split {
+  display: grid;
+  grid-template-columns: 1fr;
+  @media (width >= 64rem) {
+    grid-template-columns: var(--split-rail) var(--split-media);
+  }
+}
+
+/* Hero media panel height. Viewport-relative, so it has no place on the
+   spacing scale — it lives here rather than as an arbitrary value. */
+@utility u-hero-media {
+  min-block-size: 60svh;
+  @media (width >= 64rem) {
+    min-block-size: 86svh;
+  }
+}
+
+/* One item of the sticky sequence occupies a full pitch of scroll. */
+@utility u-sequence-item {
+  /* Only below the pin. Above lg the media sticks and the tall pitch is what
+     gives it something to hold against; below lg the media un-sticks, so the
+     same height would just be 1.6 screens of empty space per item. */
+  @media (width >= 64rem) {
+    min-block-size: var(--sequence-pitch);
+  }
+}
+
+/* On dark surfaces the accent is 2.11:1 and must not be used. Rules there are
+   amber (8.61:1 on forest, higher on roast). design-system §4 hard rules. */
+@utility u-rule-cap-dark {
+  border-block-start: var(--rule-width) solid var(--color-amber);
+}
+
+@utility u-rule-lead-dark {
+  border-inline-start: var(--rule-width) solid var(--color-amber);
+  padding-inline-start: var(--space-6);
+}
+
+/* Nav hide-on-scroll-down. Written out rather than leaning on a negative
+   translate utility, so the value is visible where the behaviour is defined. */
+@utility u-nav-hidden {
+  translate: 0 -100%;
+}
+
+/* Segmented-control active state. An inset shadow rather than a real bottom
+   border, so selecting an option does not shift the row by --rule-width. */
+@utility u-seg-active {
+  box-shadow: inset 0 calc(-1 * var(--rule-width)) 0 var(--color-rule);
+}
+
+/* The 30/70 split at component scale, used inside the subscription widget. */
+@utility u-split-inner {
+  display: grid;
+  grid-template-columns: 1fr;
+  @media (width >= 48rem) {
+    grid-template-columns: 1fr 2fr;
+  }
+}
+
+/* Price change: opacity only, on the reference's measured reveal curve.
+   An animation rather than a transition so it replays whenever the figure
+   changes. The number never slides. */
+@keyframes price-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@utility u-price-in {
+  animation: price-in var(--duration-fast) var(--ease-standard) both;
+}
+
+/* Focus ring for a control whose real input is visually hidden (the segmented
+   control's radios are sr-only, so their own ring is invisible). Written as a
+   plain rule: the equivalent `has-[:focus-visible]:outline-accent` utility did
+   not generate, and outline-color silently fell back to currentColor — a
+   muted ring whose contrast depended on the label's text colour. */
+.u-focus-ring-within:has(:focus-visible) {
+  outline: var(--rule-width) solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+/* Interactive transition for buttons, controls and the header.
+   Deliberately NOT Tailwind's `transition` / `transition-colors`: both include
+   `outline-color`, which makes a focus ring interpolate from currentColor and,
+   in practice, never arrive at the brand colour — the ring renders muted brown
+   instead of cherry. A focus ring has to be instant, so outline-color is left
+   out of the list entirely. */
+@utility u-transition-ui {
+  transition-property: color, background-color, border-color, box-shadow,
+    translate, opacity, text-decoration-color;
+  transition-duration: var(--duration-base);
+  transition-timing-function: var(--ease-hover);
+}
+
+/* Dialog. The ONLY place --shadow-overlay is allowed: a dashboard needs real
+   layering, which the reference never had (zero box-shadow anywhere).
+   Radius stays 0 — the system's radius rule has no exception for overlays. */
+@utility u-dialog {
+  border: var(--border-width) solid var(--color-hairline);
+  border-radius: var(--radius-none);
+  box-shadow: var(--shadow-overlay);
+  margin: auto;
+}
+
+/* ---------------------------------------------------------------------------
+   PINNED MEDIA — the reference's strongest structural idea (autopsy §14 #7):
+   a full-viewport media panel held still while a text rail scrolls past it.
+   It runs THREE of these, and its pinned sequence alone is 4986px (~6
+   viewports of a 12.4-viewport page). One short pinned section does not read
+   as the same site, so the effect has to cover real scroll distance.
+
+   `u-pinned-layer` is an absolutely positioned full-section container whose
+   child sticks. Sticky has to live inside it rather than on the section's own
+   child, because a stretched flow child is exactly as tall as its parent and
+   can never stick.
+   --------------------------------------------------------------------------- */
+@utility u-pinned-layer {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  /* clip, not hidden: overflow:hidden makes this layer a scroll container,
+     and a sticky child sticks to its nearest scroll container — which never
+     scrolls — so the panel simply rode up with the page. clip crops the same
+     way without creating one. */
+  overflow: clip;
+}
+
+@utility u-pinned-panel {
+  position: sticky;
+  top: 0;
+  block-size: 100svh;
+}
+
+/* The audience band's scrim: roast at the top edge for the sentence and at
+   the bottom for the labels, clear through the middle so the photograph is
+   the band. The bottom stop is heavy because the labels are small mono. */
+@utility u-band-scrim {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(to bottom, rgb(36 22 16 / 0.9) 0%, rgb(36 22 16 / 0.72) 26%, transparent 42%),
+    linear-gradient(to top, rgb(36 22 16 / 0.94) 0%, rgb(36 22 16 / 0.8) 22%, transparent 50%);
+}
+
+/* Scroll distance a pinned section gets. The panel itself is one viewport, so
+   a 2-viewport section yields exactly one viewport of pinned travel. */
+@utility u-pinned-2 {
+  min-block-size: 200svh;
+}
+
+/* ============================================================================
+   MOTION FROM THE SCREEN RECORDING — autopsy §15, design-system §6.
+   Every effect below reads a progress variable (0 -> 1) written by
+   ScrollProgress: `--p` by default, `--slide` for the edge slide. Under
+   reduced motion neither is ever written, and each `var(--p, X)` falls back
+   to that effect's resting state.
+   Geometry effects are desktop-only (lg), like the pin they belong to.
+   ========================================================================= */
+
+/* ---------------------------------------------------------------------------
+   HERO SEQUENCE (§15.3–15.4, sequenced like Two Houses). Above lg with motion,
+   one pinned photograph plays three steps, in order, as the page scrolls:
+     1. 0 -> 0.4 screens: it opens full-bleed and its left edge slides right
+        into the split, over an empty rail (--slide, on the section's grid);
+     2. then the rail's copy rises from the fold and scrolls past it (the
+        rail simply starts one screen down — u-hero-rail);
+     3. 1.2 -> 1.7 screens: its bottom edge rises faster than the page into
+        the label strip, and the Statement slides up underneath (--p, on the
+        pin column).
+   Below lg, or with reduced motion, none of this applies: the hero is the
+   plain 30/70 split with the rail sizing the row.
+   --------------------------------------------------------------------------- */
+
+/* Mobile has the nav offset; the motion hero starts at the very top instead,
+   because the photograph is full-bleed under the transparent header. */
+@utility u-hero-offset {
+  padding-block-start: var(--nav-height);
+  @media (width >= 64rem) and (prefers-reduced-motion: no-preference) {
+    padding-block-start: 0;
+  }
+}
+
+/* Vertical padding lives here, not in py-* utilities at the call site: a
+   utility's padding-block would override the motion lead-in below. */
+@utility u-hero-rail {
+  padding-block: var(--space-16);
+  @media (width >= 64rem) {
+    align-self: start;
+    padding-block: var(--space-32);
+    min-block-size: var(--hero-flow);
+  }
+  /* One empty screen, then the copy centred in the next. border-box, so the
+     min size includes the lead-in and the row comes out at --hero-rail. */
+  @media (width >= 64rem) and (prefers-reduced-motion: no-preference) {
+    padding-block-start: 100svh;
+    min-block-size: var(--hero-rail);
+  }
+}
+
+/* The pin column is taller than the row by the hold, and hangs past it (the
+   negative margin) so the Statement starts where the rail ends and slides up
+   under the strip. z-index keeps the strip over that section; the clipped-away
+   area is also clipped for hit-testing, so it covers nothing. */
+@utility u-hero-pin {
+  @media (width >= 64rem) and (prefers-reduced-motion: no-preference) {
+    position: relative;
+    z-index: 30;
+    block-size: calc(100svh + var(--hero-hold));
+    margin-block-end: calc(var(--hero-rail) - 100svh - var(--hero-hold));
+    --hero-lift: calc((100svh - var(--hero-strip)) * var(--p, 0));
+  }
+}
+
+/* The negative left inset matters: the slide layer inside is wider than this
+   column until the slide lands, and a plain inset() would clip it back. */
+@utility u-hero-stick {
+  position: relative;                   /* positions the overlay layers below lg */
+  @media (width >= 64rem) {
+    block-size: 86svh;
+  }
+  @media (width >= 64rem) and (prefers-reduced-motion: no-preference) {
+    position: sticky;
+    top: 0;
+    block-size: 100svh;
+    clip-path: inset(0 0 var(--hero-lift, 0) -100vw);
+  }
+}
+
+/* The overlay statement and its scrim ride the rising edge, and are gone by
+   40% of the collapse — before the strip is too short to hold them. */
+@utility u-hero-ride {
+  @media (width >= 64rem) and (prefers-reduced-motion: no-preference) {
+    translate: 0 calc(-1 * var(--hero-lift, 0));
+    opacity: calc(1 - var(--p, 0) * 2.5);
+  }
+}
+
+/* The strip's label band, fading in over the second half of the collapse. Its
+   own roast gradient is the scrim behind the labels. */
+@utility u-hero-strip {
+  display: none;
+  @media (width >= 64rem) and (prefers-reduced-motion: no-preference) {
+    position: absolute;
+    inset-inline: 0;
+    bottom: 0;
+    block-size: var(--hero-strip);
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: var(--space-8);
+    padding-block-end: var(--space-4);
+    background-image: linear-gradient(
+      to top,
+      rgb(27 18 12 / 0.9),
+      rgb(27 18 12 / 0.6) 55%,
+      transparent
+    );
+    translate: 0 calc(-1 * var(--hero-lift, 0));
+    opacity: clamp(0, (var(--p, 0) - 0.45) * 2.5, 1);
+    pointer-events: none;
+  }
+}
+
+/* The slide (§15.8), shared by the hero and Two Houses: the photo opens
+   full-bleed and its left edge slides right into the split as `--slide` runs
+   0 -> 1. Width, not clip-path, because the edge has to land exactly on the
+   rail boundary and only the parent knows where that is. 100vw overshoots the
+   left edge by the scrollbar width, which is offscreen. */
+@utility u-slide-edge {
+  @media (width >= 64rem) {
+    position: absolute;
+    inset-block: 0;
+    inset-inline-end: 0;
+    inline-size: 100%;
+  }
+  @media (width >= 64rem) and (prefers-reduced-motion: no-preference) {
+    inline-size: calc(100% + (100vw - 100%) * (1 - var(--slide, 1)));
+  }
+}
+
+/* The rail's lead-in: one screen of empty rail before the first item, so the
+   edge finishes its slide (end -0.4 on the section's ScrollProgress) while the
+   rail is still empty, and the first item only enters from the fold after.
+   Motion-only, like the slide it waits for. */
+@utility u-slide-rail {
+  @media (width >= 64rem) and (prefers-reduced-motion: no-preference) {
+    padding-block-start: 100svh;
+  }
+}
+
+/* Trailing heading rule drawing in from the left (§15.5). */
+@utility u-rule-draw {
+  scale: var(--p, 1) 1;
+  transform-origin: left;
+}
+
+/* Origins columns rising into the ladder at different rates (§15.7): the
+   third leads, the second lands last, as on the reference. */
+.u-rise-group > :nth-child(1) { --rise: 8rem; }
+.u-rise-group > :nth-child(2) { --rise: 12rem; }
+.u-rise-group > :nth-child(3) { --rise: 4rem; }
+
+@utility u-rise {
+  @media (width >= 64rem) and (prefers-reduced-motion: no-preference) {
+    translate: 0 calc((1 - var(--p, 1)) * var(--rise, 0rem));
+  }
+}
+
+/* The leading rule as a pseudo-element, so it can grow down the column with
+   scroll. Same 2px, same 24px inset and the same 2 -> 4px hover as
+   u-rule-lead (hover:before:w-1 at the call site). */
+@utility u-rule-lead-draw {
+  position: relative;
+  padding-inline-start: var(--space-6);
+  &::before {
+    content: "";
+    position: absolute;
+    inset-block: 0;
+    inset-inline-start: 0;
+    inline-size: var(--rule-width);
+    background-color: var(--color-rule);
+    transform-origin: top;
+    scale: 1 var(--p, 1);
+    transition: inline-size var(--duration-base) var(--ease-hover);
+  }
+}
+
+/* Header hover bar (§15.2). Engaged = pointer hover on a hover-capable device,
+   or keyboard focus anywhere inside. Plain rules rather than group-hover
+   utilities so the badge's own hover (an inversion) still wins over the
+   engaged cherry — hence :not(:hover) on the CTA. The bar itself never takes
+   pointer events: it sits under the header's own controls. */
+.u-header-bar {
+  position: absolute;
+  z-index: -1;
+  inset-block: var(--space-3);
+  inset-inline: calc(var(--gutter) / 2);
+  border: var(--border-width) solid rgb(27 18 12 / 0.45);
+  background-color: rgb(251 247 240 / 0.82);
+  backdrop-filter: blur(12px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--duration-base) var(--ease-hover);
+}
+
+.u-header-reveal {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--duration-base) var(--ease-hover);
+}
+
+.u-header-engage:focus-within { color: var(--color-text); }
+.u-header-engage:focus-within .u-header-bar { opacity: 1; }
+.u-header-engage:focus-within .u-header-reveal { opacity: 1; pointer-events: auto; }
+.u-header-engage:focus-within .u-header-trigger {
+  background-color: var(--color-text);
+  color: var(--color-surface);
+}
+.u-header-engage:focus-within .u-header-cta:not(:hover) {
+  background-color: var(--color-accent);
+  border-color: var(--color-accent);
+  color: var(--color-accent-fg);
+}
+
+@media (hover: hover) {
+  .u-header-engage:hover { color: var(--color-text); }
+  .u-header-engage:hover .u-header-bar { opacity: 1; }
+  .u-header-engage:hover .u-header-reveal { opacity: 1; pointer-events: auto; }
+  .u-header-engage:hover .u-header-trigger {
+    background-color: var(--color-text);
+    color: var(--color-surface);
+  }
+  .u-header-engage:hover .u-header-cta:not(:hover) {
+    background-color: var(--color-accent);
+    border-color: var(--color-accent);
+    color: var(--color-accent-fg);
+  }
+}
+
+/* Footer watermark (§15.9): the name set huge in the decorative hairline
+   colour, cut off by the footer's bottom edge. */
+@utility u-watermark {
+  font-size: clamp(4rem, 17vw, 18rem);
+  line-height: 0.8;
+  letter-spacing: -0.03em;
+  white-space: nowrap;
+  color: var(--color-hairline);
+  translate: 0 18%;
+  user-select: none;
+}
+
+/* Blur-up load (§15.1): panel photos start blurred and BlurUp sharpens them
+   once loaded. Only when script can run and motion is allowed — otherwise
+   there is nothing to sharpen them, so they never start blurred. */
+@media (scripting: enabled) and (prefers-reduced-motion: no-preference) {
+  .u-blur-up img {
+    filter: blur(16px);
+    scale: 1.06;
+  }
+}
+
+/* Loading-screen mark: every part starts hidden, so nothing shows fully drawn
+   before PageLoader's first frame takes over. Stroked parts use pathLength=1,
+   so a dash of 1 is the whole path. */
+.u-loader-mark [data-part="stem"],
+.u-loader-mark [data-part="rib"],
+.u-loader-mark [data-part="crease"] {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+}
+.u-loader-mark [data-part="leaf"],
+.u-loader-mark [data-part="cherry"] {
+  scale: 0;
+}
