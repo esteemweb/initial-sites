@@ -1,0 +1,12 @@
+node_modules
+.next
+next-env.d.ts
+*.tsbuildinfo
+
+# environment files (secrets never go in git)
+.env*
+
+# working folders the site doesn't need to build
+scripts/cover-prompts/
+scripts/assets/
+audits/
