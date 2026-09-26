@@ -6,6 +6,11 @@
 !/traag/
 !/askforthemoon/
 !/le-comble/
+!/Corneum/
 
 # Never publish security audit reports
 **/SECURITY-AUDIT.md
+
+# Private working notes (kept on this computer, never published)
+**/REFERENCE-*.md
+**/BRIEF.md

@@ -1,0 +1,368 @@
+@import "tailwindcss";
+
+/* Tokens. Every value is documented in design-system.md with its source.
+   Tailwind's default scales are wiped (`initial`) so an off-system value
+   cannot be written: a class that isn't listed here simply doesn't exist. */
+@theme {
+  /* Colour: three colours, two opacity steps of ink. No fourth. */
+  --color-*: initial;
+  --color-paper: #ffffff;
+  --color-ink: #000000;
+  --color-green: #00524a; /* data and active percentages only */
+  --color-ink-muted: rgb(0 0 0 / 0.6); /* 5.74:1 on paper */
+  --color-hairline: rgb(0 0 0 / 0.12); /* separators only, 1.32:1 */
+
+  /* Families: Geist Sans (300 display, 400 body) + Geist Mono (400 data) */
+  --font-*: initial;
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+  --font-weight-*: initial;
+  --font-weight-light: 300;
+  --font-weight-regular: 400;
+
+  /* Type roles live in the @utility blocks below; no raw text-* sizes. */
+  --text-*: initial;
+
+  /* Spacing ramp, px-named: p-20 is 20px. Nothing else generates. */
+  --spacing-*: initial;
+  --spacing-0: 0px;
+  --spacing-8: 8px;
+  --spacing-16: 16px;
+  --spacing-20: 20px;
+  --spacing-24: 24px;
+  --spacing-40: 40px;
+  --spacing-48: 48px;
+  --spacing-64: 64px;
+  --spacing-96: 96px;
+  --spacing-160: 160px;
+
+  /* Sizes (not spacing) */
+  --container-*: initial;
+  --container-modal: 454px; /* spec modal panel, autopsy §7 */
+  --container-measure: 55ch; /* line length cap */
+
+  /* Radius: 0 on imagery, pill on anything tappable, panel on floating panels */
+  --radius-*: initial;
+  --radius-panel: 20px;
+  --radius-pill: 999px;
+
+  /* No box-shadows on UI */
+  --shadow-*: initial;
+  --inset-shadow-*: initial;
+  --drop-shadow-*: initial;
+
+  /* Breakpoints: base styles are the 390px layout */
+  --breakpoint-*: initial;
+  --breakpoint-md: 48rem; /* 768 */
+  --breakpoint-lg: 64rem; /* 1024: type steps here */
+  --breakpoint-xl: 90rem; /* 1440 */
+
+  /* Motion: everything decelerates in, accelerates out */
+  --ease-*: initial;
+  --ease-enter: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-exit: cubic-bezier(0.55, 0, 0.85, 0.36);
+}
+
+/* ── Type roles ─────────────────────────────────────────────
+   Stepped at 1024, never fluid. Solid leading above 20px. */
+@utility type-display {
+  font-family: var(--font-sans);
+  font-weight: var(--font-weight-light);
+  font-size: 44px;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  text-wrap: balance;
+  @media (width >= 64rem) {
+    font-size: 140px;
+  }
+}
+
+@utility type-h3 {
+  font-family: var(--font-sans);
+  font-weight: var(--font-weight-light);
+  font-size: 34px;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+  @media (width >= 64rem) {
+    font-size: 56px;
+    line-height: 1;
+  }
+}
+
+@utility type-h4 {
+  font-family: var(--font-sans);
+  font-weight: var(--font-weight-light);
+  font-size: 20px;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+  @media (width >= 64rem) {
+    font-size: 32px;
+    line-height: 1;
+  }
+}
+
+@utility type-subtitle {
+  font-family: var(--font-sans);
+  font-weight: var(--font-weight-regular);
+  font-size: 20px;
+  line-height: 1.2;
+  letter-spacing: 0;
+}
+
+/* Body is larger on mobile, not smaller */
+@utility type-body {
+  font-family: var(--font-sans);
+  font-weight: var(--font-weight-regular);
+  font-size: 16px;
+  line-height: 1.4;
+  letter-spacing: 0;
+  @media (width >= 64rem) {
+    font-size: 14px;
+  }
+}
+
+@utility type-data {
+  font-family: var(--font-mono);
+  font-weight: var(--font-weight-regular);
+  font-size: 14px;
+  line-height: 1.4;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+/* ── Grid: 12 columns, 20px gutter, 20px margin, no max-width ── */
+@utility grid-page {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: var(--spacing-20);
+  padding-inline: var(--spacing-20);
+}
+
+@layer base {
+  html {
+    background: var(--color-paper);
+    color: var(--color-ink);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-size-adjust: 100%;
+  }
+
+  body {
+    @apply type-body;
+  }
+
+  hr {
+    border: 0;
+    border-top: 1px solid var(--color-hairline);
+  }
+
+  /* One focus treatment everywhere. The offset leaves a paper gap so the
+     ring reads on ink-filled buttons too. [data-focus] is the styleguide's
+     forced-state preview. */
+  :focus-visible,
+  [data-focus] {
+    outline: 2px solid var(--color-ink);
+    outline-offset: 2px;
+  }
+
+  /* Links: opacity to 0.72 at 160ms, the only hover treatment */
+  a,
+  .link {
+    transition: opacity 160ms ease;
+  }
+  a:hover,
+  .link:hover {
+    opacity: 0.72;
+  }
+
+  /* An open modal stops the page behind it from scrolling */
+  html:has(dialog[open]) {
+    overflow: hidden;
+  }
+}
+
+/* Print: with a spec sheet open, print only the sheet (save as PDF from
+   the print dialog). Otherwise print the page without site chrome. */
+@media print {
+  html:has(dialog[open]) {
+    overflow: visible;
+  }
+  html:has(dialog[open]) body * {
+    visibility: hidden;
+  }
+  dialog[open] [data-print-sheet],
+  dialog[open] [data-print-sheet] * {
+    visibility: visible;
+  }
+  dialog[open] {
+    position: absolute;
+    inset: 0;
+    height: auto;
+    padding: 0;
+  }
+  dialog[open] [data-print-sheet],
+  dialog[open] [data-print-sheet] .overflow-y-auto {
+    max-width: none;
+    max-height: none;
+    overflow: visible;
+    transform: none;
+    translate: none;
+    opacity: 1;
+  }
+  [data-print-hide],
+  body > header,
+  body > footer,
+  .fixed:not(dialog) {
+    display: none !important;
+  }
+}
+
+/* Reduced motion: every transition resolves to its end state instantly.
+   Components are built so the end state is complete on its own. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0s !important;
+    transition-delay: 0s !important;
+    animation-duration: 0s !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* The home page pin: a 400svh track whose sticky stage is one viewport,
+   so the section spends at most four viewports of scroll. */
+@utility pin-track {
+  height: 400svh;
+}
+
+/* Once the flight canvas has drawn Vessel 01, it is the vessel: the hero still
+   underneath steps aside (opacity only, so its alt text stays readable). */
+[data-vessel-flight="on"] [data-vessel-still] {
+  opacity: 0;
+}
+
+/* ── Finishing ──────────────────────────────────────────────── */
+
+/* Skip link: the first focusable element, off screen until focused */
+.skip-link {
+  position: fixed;
+  top: 8px;
+  left: 20px;
+  z-index: 50;
+  display: inline-flex;
+  min-height: 48px;
+  align-items: center;
+  border-radius: var(--radius-pill);
+  background: var(--color-ink);
+  color: var(--color-paper);
+  padding: 0 24px;
+  font-family: var(--font-sans);
+  font-size: 16px;
+  translate: 0 -200%;
+}
+.skip-link:focus-visible {
+  translate: 0 0;
+}
+
+::selection {
+  background: var(--color-ink);
+  color: var(--color-paper);
+}
+
+/* ── Motion additions ───────────────────────────────────────────
+   Every effect below is opt-in: the default style IS the finished state,
+   so reduced motion, older browsers and no-JS all get the complete page.
+   Scroll-linked effects use CSS scroll-driven animations (no JS). */
+
+@keyframes title-rise {
+  /* A baseline mask: the text rises while the clip keeps the visible
+     region fixed where the title will rest */
+  from {
+    translate: 0 105%;
+    clip-path: inset(0 0 100% 0);
+  }
+  to {
+    translate: 0 0;
+    clip-path: inset(-0.3em -0.1em -0.3em -0.1em);
+  }
+}
+@keyframes read-in {
+  /* 0.45, not the reference's 0.2: unread words still meet 3:1 as large
+     text (≈3.4:1 on paper), so the line is legible at every scroll position */
+  from {
+    opacity: 0.45;
+  }
+}
+@keyframes hairline-draw {
+  from {
+    scale: 0 1;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  /* Page titles rise into place on load (autopsy: mask reveal, by line) */
+  .title-rise {
+    animation: title-rise 720ms var(--ease-enter) both;
+  }
+  .title-rise-2 {
+    animation-delay: 80ms;
+  }
+
+  @supports (animation-timeline: view()) {
+    /* The premise fills in word by word as it is read (ReadingLine) */
+    .reading-line {
+      view-timeline-name: --reading;
+    }
+    .reading-line > span {
+      animation: read-in linear both;
+      animation-timeline: --reading;
+    }
+
+    /* Section hairlines draw left to right as the section arrives */
+    .hairline-draw {
+      position: relative;
+      border-top-color: transparent;
+    }
+    .hairline-draw::before {
+      content: "";
+      position: absolute;
+      inset: -1px 0 auto;
+      height: 1px;
+      background: var(--color-hairline);
+      transform-origin: left;
+      animation: hairline-draw linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 100%;
+    }
+  }
+
+  /* Product image morph between card and product page (React ViewTransition,
+     share="morph") and the page crossfade around it */
+  ::view-transition-group(.morph) {
+    animation-duration: 720ms;
+    animation-timing-function: var(--ease-enter);
+  }
+  ::view-transition-old(root) {
+    animation-duration: 360ms;
+    animation-timing-function: var(--ease-exit);
+  }
+  ::view-transition-new(root) {
+    animation-duration: 520ms;
+    animation-timing-function: var(--ease-enter);
+  }
+}
+
+/* The universal reduced-motion rule doesn't reach view-transition
+   pseudo-elements: navigation swaps instantly */
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation-duration: 0s !important;
+    animation-delay: 0s !important;
+  }
+}
