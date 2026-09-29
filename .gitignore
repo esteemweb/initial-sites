@@ -11,6 +11,7 @@
 !/leafandcherry/
 !/talay-dao/
 !/pulp/
+!/uroko/
 
 # Never publish security audit reports
 **/SECURITY-AUDIT.md
